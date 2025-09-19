@@ -85,7 +85,7 @@ body {
   background:linear-gradient(145deg,#ffffff 0%,#fefefe 100%);
   border:1px solid #dee2e6; border-radius:8px;
   left:50%; top:50%;
-  transform:translateX(-50%) translateY(0); /* mulai tepat di amplop */
+  transform:translateX(-50%) translateY(0); /* mulai di amplop */
   opacity:0;
   box-shadow:0 8px 32px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8);
   z-index:5;
@@ -93,19 +93,17 @@ body {
   overflow:hidden;
 }
 
-/* Animasi keluar masuk surat */
+/* animasi pop-up sebagian */
 .letter.pop-up { 
-  animation: popUp 0.8s forwards cubic-bezier(0.25,0.46,0.45,0.94); 
-}
-@keyframes popUp {
-  from { transform:translateX(-50%) translateY(0); opacity:0; }
-  to { transform:translateX(-50%) translateY(-40px); opacity:1; }
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  opacity:1;
+  transform:translateX(-50%) translateY(-40px);
 }
 
 .letter-content {
   opacity:0;
   height:100%;
-  overflow-y:auto;
+  overflow-y:hidden; /* scroll manual */
   transition: opacity 0.6s ease 0.3s;
 }
 .letter.content-visible .letter-content { opacity:1; }
@@ -133,16 +131,6 @@ body {
   border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,0.1);
   z-index:10;
 }
-
-.scroll-indicator {
-  position:absolute; top:20px; left:50%; transform:translateX(-50%);
-  color:#495057; font-size:13px; opacity:0;
-  transition:opacity 0.3s ease;
-  background:rgba(255,255,255,0.95); padding:8px 16px;
-  border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.1);
-  z-index:10;
-}
-.scroll-indicator.visible { opacity:1; }
 
 @keyframes fadeInUp {
   from { opacity:0; transform:translateY(30px) scale(0.9); }
@@ -172,33 +160,30 @@ body {
         <p><strong>Kepada yang terkasih,</strong></p>
         <p>Selamat datang di amplop interaktif dengan desain realistis!</p>
         <p>Klik amplop untuk membuka atau menutup, lalu scroll untuk mengontrol surat.</p>
+        <p>Scroll mouse akan mengangkat surat ke atas, atau menurunkannya kembali ke amplop.</p>
       </div>
       <div class="letter-signature">Dengan penuh kreativitas,<br><strong>Canva Code</strong> ✨</div>
     </div>
   </div>
 </div>
 
-<div class="scroll-indicator" id="scrollIndicator">🖱️ Scroll ↑↓ untuk mengontrol surat</div>
-<div class="instructions">Klik amplop untuk buka/tutup</div>
+<div class="instructions">Klik amplop untuk buka/tutup • Scroll untuk mengangkat surat</div>
 
 <script>
 const envelopeContainer=document.getElementById('envelopeContainer');
 const envelope=document.getElementById('envelope');
 const letter=document.getElementById('letter');
-const scrollIndicator=document.getElementById('scrollIndicator');
 const bgMusic=document.getElementById('bgMusic');
 const popSound=document.getElementById('popSound');
 
 let isOpened=false;
-let letterOffset=0; // posisi scroll surat
+let letterOffset=0; // offset untuk geser surat
 let bgStarted=false;
 
-// klik amplop
 function openEnvelope(){
   envelope.classList.add('opened');
   letter.classList.add('pop-up');
-  setTimeout(()=>letter.classList.add('content-visible'),800);
-  setTimeout(()=>scrollIndicator.classList.add('visible'),1000);
+  setTimeout(()=>letter.classList.add('content-visible'),300);
   try{ popSound.currentTime=0; popSound.play(); }catch(e){}
   if(!bgStarted){ bgStarted=true; bgMusic.play().catch(()=>{}); }
   isOpened=true;
@@ -206,35 +191,23 @@ function openEnvelope(){
 
 function closeEnvelope(){
   letter.classList.remove('content-visible');
-  scrollIndicator.classList.remove('visible');
   letter.classList.remove('pop-up');
-  setTimeout(()=>{ envelope.classList.remove('opened'); letterOffset=0; try{ popSound.currentTime=0; popSound.play();}catch(e){} },400);
+  letterOffset=0;
+  setTimeout(()=>{ envelope.classList.remove('opened'); try{ popSound.currentTime=0; popSound.play(); }catch(e){} },300);
   isOpened=false;
 }
 
-// click handler
+// click amplop
 envelopeContainer.addEventListener('click',()=>{ if(isOpened) closeEnvelope(); else openEnvelope(); });
 
-// scroll surat
-let scrollTimeout;
+// scroll efek geser surat
 document.addEventListener('wheel',function(e){
   if(!isOpened) return;
   e.preventDefault();
-  clearTimeout(scrollTimeout);
-  scrollIndicator.classList.add('visible');
-  scrollTimeout=setTimeout(()=>scrollIndicator.classList.remove('visible'),1800);
-
   const delta=e.deltaY;
-  const content=letter.querySelector('.letter-content');
-  const maxScroll=content.scrollHeight-content.clientHeight;
-
-  if(delta<0){ // scroll up
-    letterOffset=Math.min(letterOffset+20, maxScroll);
-  } else { // scroll down
-    letterOffset=Math.max(letterOffset-20, 0);
-  }
-  content.scrollTop=maxScroll-letterOffset;
-
+  letterOffset-=delta*0.3; // geser sedikit
+  letterOffset=Math.max(-150, Math.min(0, letterOffset)); // batas atas dan bawah
+  letter.style.transform=`translateX(-50%) translateY(${ -40 + letterOffset }px)`;
 },{passive:false});
 
 // animasi masuk
