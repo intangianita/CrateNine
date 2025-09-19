@@ -81,8 +81,8 @@ body {
   background:linear-gradient(145deg,#ffffff 0%,#fefefe 100%);
   border:1px solid #dee2e6; border-radius:8px;
   left:50%; top:50%;
-  transform:translateX(-50%) translateY(120px); /* tersembunyi di bawah amplop */
-  opacity:0; /* muncul saat amplop dibuka */
+  transform:translateX(-50%) translateY(80px); /* posisi pop-up sebagian */
+  opacity:0;
   box-shadow:0 8px 32px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8);
   z-index:5;
   padding:25px;
@@ -137,8 +137,8 @@ body {
 </head>
 <body>
 
-<audio id="bgMusic" src="https://raw.githubusercontent.com/username/repo/main/music.mp3" loop></audio>
-<audio id="popSound" src="https://raw.githubusercontent.com/username/repo/main/pop.wav"></audio>
+<audio id="bgMusic" src="music.mp3" loop></audio>
+<audio id="popSound" src="pop.wav"></audio>
 
 <div class="envelope-container" id="envelopeContainer">
   <div class="envelope" id="envelope">
@@ -158,7 +158,6 @@ body {
         <p><strong>Kepada yang terkasih,</strong></p>
         <p>Selamat datang di amplop interaktif dengan desain realistis!</p>
         <p>Klik amplop untuk membuka atau menutup, lalu scroll untuk mengontrol surat.</p>
-        <p>Scroll mengangkat surat di dalam amplop tanpa terlihat keluar sebelum amplop terbuka.</p>
       </div>
       <div class="letter-signature">Dengan penuh kreativitas,<br><strong>Canva Code</strong> ✨</div>
     </div>
@@ -177,17 +176,18 @@ const bgMusic = document.getElementById('bgMusic');
 const popSound = document.getElementById('popSound');
 
 let isOpened = false;
-let letterOffset = 120; // tersembunyi
-let maxOffset = -60;    // maksimal surat naik di dalam amplop
-let minOffset = 120;    // posisi penuh di dalam amplop
+let letterOffset = 80; // posisi pop-up sebagian
+let maxOffset = -60;   // posisi maksimal naik
+let minOffset = 80;    // posisi awal pop-up
 let bgStarted = false;
 
 function openEnvelope() {
   envelope.classList.add('opened');
   letter.style.opacity = 1;
   letter.classList.add('content-visible');
-  if(!bgStarted){ bgStarted=true; bgMusic.play().catch(()=>{}); }
+  letter.style.transform = `translateX(-50%) translateY(${letterOffset}px)`;
   try{ popSound.currentTime=0; popSound.play(); } catch(e){}
+  if(!bgStarted){ bgStarted=true; bgMusic.play().catch(()=>{}); }
   isOpened=true;
 }
 
@@ -203,7 +203,7 @@ function closeEnvelope() {
 
 envelopeContainer.addEventListener('click',()=>{ if(isOpened) closeEnvelope(); else openEnvelope(); });
 
-// scroll control: naik/turun surat di dalam amplop
+// scroll control
 let scrollTimeout;
 document.addEventListener('wheel',function(e){
   if(!isOpened) return;
@@ -220,9 +220,6 @@ document.addEventListener('wheel',function(e){
   }
 
   letter.style.transform = `translateX(-50%) translateY(${letterOffset}px)`;
-
-  // tutup amplop otomatis jika surat kembali penuh
-  if(letterOffset === minOffset) closeEnvelope();
 },{passive:false});
 
 // animasi masuk
@@ -241,6 +238,5 @@ function createHeart(){
 }
 setInterval(createHeart,600);
 </script>
-
 </body>
 </html>
