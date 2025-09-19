@@ -86,7 +86,7 @@ body {
   background:linear-gradient(145deg,#ffffff 0%,#fefefe 100%);
   border:1px solid #dee2e6; border-radius:6px;
   left:50%; top:0;
-  transform:translateX(-50%) translateY(100%);
+  transform:translateX(-50%) translateY(100%); /* awal di dalam amplop */
   box-shadow:0 8px 32px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8);
   z-index:5;
   padding:25px;
@@ -182,12 +182,13 @@ const bgMusic = document.getElementById('bgMusic');
 const popSound = document.getElementById('popSound');
 
 let isOpened=false;
-let letterOffset=10; // posisi awal surat sedikit pop-up
+let letterOffset=100; // posisi awal di dalam amplop
 let bgStarted=false;
 
 function openEnvelope() {
   envelope.classList.add('opened');
   letter.classList.remove('content-visible');
+  letterOffset = 50; // pop-up sebagian
   letter.style.transform = `translateX(-50%) translateY(${letterOffset}%)`;
   setTimeout(()=>letter.classList.add('content-visible'),400);
   setTimeout(()=>scrollIndicator.classList.add('visible'),600);
@@ -200,8 +201,9 @@ function openEnvelope() {
 function closeEnvelope() {
   letter.classList.remove('content-visible');
   scrollIndicator.classList.remove('visible');
-  letter.style.transform = `translateX(-50%) translateY(100%)`;
-  setTimeout(()=>{ envelope.classList.remove('opened'); letterOffset=10; try{ popSound.currentTime=0; popSound.play(); }catch(e){} },400);
+  letterOffset = 100; // masuk lagi ke amplop
+  letter.style.transform = `translateX(-50%) translateY(${letterOffset}%)`;
+  setTimeout(()=>{ envelope.classList.remove('opened'); try{ popSound.currentTime=0; popSound.play(); }catch(e){} },400);
   isOpened=false;
 }
 
@@ -221,8 +223,8 @@ document.addEventListener('wheel', function(e){
   scrollTimeout=setTimeout(()=>scrollIndicator.classList.remove('visible'),1800);
 
   const delta = e.deltaY;
-  if(delta < 0) letterOffset = Math.max(letterOffset - 2, -60); // scroll up → naik
-  else letterOffset = Math.min(letterOffset + 2, 10); // scroll down → masuk
+  if(delta < 0) letterOffset = Math.max(letterOffset - 2, 0); // scroll up → naik maksimal 0%
+  else letterOffset = Math.min(letterOffset + 2, 50); // scroll down → masuk ke posisi pop-up awal
 
   letter.style.transform = `translateX(-50%) translateY(${letterOffset}%)`;
 }, {passive:false});
