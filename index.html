@@ -22,6 +22,7 @@
     .heart {
       position: absolute;
       color: rgba(255, 0, 100, 0.6);
+      font-size: 20px;
       animation: floatUp 6s linear forwards;
       user-select: none;
       pointer-events: none;
@@ -161,7 +162,7 @@
         <div class="letter-body">
           <p><strong>Kepada yang terkasih,</strong></p>
           <p>Selamat datang di amplop interaktif dengan desain realistis!</p>
-          <p>Klik amplop untuk membuka, lalu scroll untuk mengontrol surat.</p>
+          <p>Klik amplop untuk membuka atau menutup, lalu scroll untuk mengontrol surat.</p>
         </div>
         <div class="letter-signature"> Dengan penuh kreativitas,<br><strong>Canva Code</strong> ✨ </div>
       </div>
@@ -169,7 +170,7 @@
   </div>
 
   <div class="scroll-indicator" id="scrollIndicator">🖱️ Gunakan scroll untuk mengontrol surat</div>
-  <div class="instructions">Klik amplop untuk membuka/menutup • Scroll ↑↓ untuk mengontrol surat</div>
+  <div class="instructions">Klik amplop untuk buka/tutup • Scroll ↑↓ untuk mengontrol surat</div>
 
   <script>
     const envelopeContainer = document.getElementById('envelopeContainer');
@@ -180,48 +181,43 @@
     const popSound = document.getElementById('popSound');
 
     let isOpened = false;
-    let letterPosition = 50; // middle start
+    let letterPosition = 50;
     let bgStarted = false;
 
-    // Toggle open/close on click (repeats)
-    envelopeContainer.addEventListener('click', function () {
-      if (!isOpened) {
-        // open
-        envelope.classList.add('opened');
-        letter.classList.add('pulled-out');
-        setTimeout(() => letter.classList.add('content-visible'), 800);
-        setTimeout(() => scrollIndicator.classList.add('visible'), 1000);
+    function openEnvelope() {
+      envelope.classList.add('opened');
+      letter.classList.add('pulled-out');
+      setTimeout(() => letter.classList.add('content-visible'), 800);
+      setTimeout(() => scrollIndicator.classList.add('visible'), 1000);
 
-        try { popSound.currentTime = 0; popSound.play(); } catch(e){}
-        if (!bgStarted) {
-          bgStarted = true;
-          bgMusic.play().catch(()=>{}); // play once on first open
-        }
-        isOpened = true;
-      } else {
-        // close (smooth)
-        letter.classList.remove('content-visible');
-        scrollIndicator.classList.remove('visible');
-
-        // remove pulled-out so CSS animates it down
-        letter.classList.remove('pulled-out');
-
-        // small delay then close flap
-        setTimeout(() => {
-          envelope.classList.remove('opened');
-          try { popSound.currentTime = 0; popSound.play(); } catch(e){}
-          // reset transform/opacity after animation ends
-          setTimeout(() => {
-            letter.style.transform = 'translateX(-50%) translateY(200px)';
-            letter.style.opacity = '0';
-            letterPosition = 50;
-          }, 350);
-          isOpened = false;
-        }, 300);
+      try { popSound.currentTime = 0; popSound.play(); } catch(e){}
+      if (!bgStarted) {
+        bgStarted = true;
+        bgMusic.play().catch(()=>{});
       }
+      isOpened = true;
+    }
+
+    function closeEnvelope() {
+      letter.classList.remove('content-visible');
+      scrollIndicator.classList.remove('visible');
+      letter.classList.remove('pulled-out');
+      setTimeout(() => {
+        envelope.classList.remove('opened');
+        try { popSound.currentTime = 0; popSound.play(); } catch(e){}
+        letter.style.transform = 'translateX(-50%) translateY(200px)';
+        letter.style.opacity = '0';
+        letterPosition = 50;
+      }, 400);
+      isOpened = false;
+    }
+
+    envelopeContainer.addEventListener('click', () => {
+      if (isOpened) closeEnvelope();
+      else openEnvelope();
     });
 
-    // Scroll controls letter position while opened
+    // kontrol scroll
     let scrollTimeout;
     document.addEventListener('wheel', function (e) {
       if (!isOpened) return;
@@ -238,27 +234,15 @@
       const translateY = -180 - (letterPosition - 50) * 2.5;
       letter.style.transform = `translateX(-50%) translateY(${translateY}px)`;
 
-      // if fully pushed in, auto-close
-      if (letterPosition <= 0) {
-        letter.classList.remove('content-visible');
-        setTimeout(() => {
-          envelope.classList.remove('opened');
-          letter.classList.remove('pulled-out');
-          letter.style.transform = 'translateX(-50%) translateY(200px)';
-          letter.style.opacity = '0';
-          isOpened = false;
-          letterPosition = 50;
-          scrollIndicator.classList.remove('visible');
-        }, 300);
-      }
+      if (letterPosition <= 0) closeEnvelope();
     }, { passive: false });
 
-    // entry animation
+    // animasi masuk
     window.addEventListener('load', () => {
       envelopeContainer.style.animation = 'fadeInUp 1s ease-out';
     });
 
-    // hearts background
+    // hati background
     function createHeart() {
       const heart = document.createElement('div');
       heart.className = 'heart';
