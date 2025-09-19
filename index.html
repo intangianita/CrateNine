@@ -16,36 +16,12 @@
       font-family: sans-serif;
     }
 
-    /* background hearts */
-    .hearts {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 0;
-    }
-
-    .heart {
-      position: absolute;
-      bottom: -20px;
-      color: rgba(255, 0, 100, 0.6);
-      font-size: 20px;
-      animation: rise 6s linear infinite;
-    }
-
-    @keyframes rise {
-      0% { transform: translateY(0) scale(1); opacity: 1; }
-      100% { transform: translateY(-120vh) scale(1.5); opacity: 0; }
-    }
-
     .envelope-container {
       position: relative;
       width: 300px;
       height: 220px;
       cursor: pointer;
-      z-index: 2;
+      z-index: 10;
     }
 
     /* Amplop */
@@ -99,72 +75,3 @@
 
     .letter p {
       padding: 1em;
-      margin: 0;
-      font-size: 16px;
-      color: #333;
-    }
-  </style>
-</head>
-<body>
-  <!-- background hearts -->
-  <div class="hearts"></div>
-
-  <div class="envelope-container">
-    <div class="envelope">
-      <div class="flap"></div>
-      <div class="letter">
-        <p>💌 Surprise! Ini isi suratnya. Kamu bisa taruh pesan apa saja di sini.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- audio -->
-  <audio id="music" src="music.mp3" loop></audio>
-  <audio id="pop" src="pop.wav"></audio>
-
-  <script>
-    const envelope = document.querySelector(".envelope");
-    const letter = document.querySelector(".letter");
-    const music = document.getElementById("music");
-    const pop = document.getElementById("pop");
-
-    let isOpen = false;
-
-    // klik untuk buka amplop
-    envelope.addEventListener("click", () => {
-      if (!isOpen) {
-        envelope.classList.add("open");
-        isOpen = true;
-        pop.play();       // suara pop
-        music.play();     // mulai musik
-      }
-    });
-
-    // scroll untuk buka/tutup surat
-    window.addEventListener("wheel", (e) => {
-      if (!isOpen) return;
-
-      if (e.deltaY > 0) {
-        letter.classList.add("show");
-      } else if (e.deltaY < 0) {
-        letter.classList.remove("show");
-      }
-    });
-
-    // generate hearts
-    function createHeart() {
-      const heart = document.createElement("div");
-      heart.classList.add("heart");
-      heart.innerHTML = "❤";
-      heart.style.left = Math.random() * 100 + "vw";
-      heart.style.fontSize = 16 + Math.random() * 20 + "px";
-      heart.style.animationDuration = 3 + Math.random() * 5 + "s";
-      document.querySelector(".hearts").appendChild(heart);
-
-      setTimeout(() => heart.remove(), 8000);
-    }
-
-    setInterval(createHeart, 500);
-  </script>
-</body>
-</html>
