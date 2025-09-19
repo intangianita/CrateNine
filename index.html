@@ -1,21 +1,83 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Amplop Realistis Interaktif</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Surprise Envelope</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
     body {
-      font-family: 'Georgia', serif;
-      background: #ffdde1;
-      overflow: hidden;
+      margin: 0;
       height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
+      background: pink;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    .envelope-container {
+      position: relative;
+      width: 300px;
+      height: 220px;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    /* Amplop */
+    .envelope {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      border: 2px solid #e67e9c;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+
+    /* Segitiga tutup */
+    .flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 150px solid transparent;
+      border-right: 150px solid transparent;
+      border-bottom: 110px solid #e67e9c;
+      transform-origin: top;
+      transition: transform 0.8s ease;
+      z-index: 3;
+    }
+
+    .envelope.open .flap {
+      transform: rotateX(180deg);
+    }
+
+    /* Surat */
+    .letter {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%) translateY(100%);
+      width: 90%;
+      height: 180px;
+      background: #fffbea;
+      border: 2px solid #f1c40f;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: transform 0.8s ease;
+      z-index: 2;
+    }
+
+    .letter.show {
+      transform: translateX(-50%) translateY(-120px);
+    }
+
+    .letter p {
+      padding: 1em;
+      margin: 0;
+      font-size: 16px;
+      color: #333;
     }
 
     /* Background hati */
@@ -23,162 +85,64 @@
       position: absolute;
       color: rgba(255, 0, 100, 0.6);
       font-size: 20px;
-      animation: floatUp 5s linear infinite;
+      animation: floatUp 5s linear forwards;
       user-select: none;
       pointer-events: none;
+      z-index: 1;
     }
+
     @keyframes floatUp {
       0% { transform: translateY(0) scale(1); opacity: 1; }
       100% { transform: translateY(-800px) scale(1.5); opacity: 0; }
     }
-
-    /* Amplop */
-    .envelope-container {
-      position: relative;
-      cursor: pointer;
-      transform-style: preserve-3d;
-      transition: transform 0.3s ease;
-      z-index: 10;
-    }
-    .envelope-container:hover { transform: scale(1.02); }
-
-    .envelope {
-      width: 320px; height: 220px;
-      background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-      border: 2px solid #e9ecef;
-      position: relative;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .envelope-back {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(145deg, #ffffff 0%, #f1f3f4 100%);
-      border-radius: 8px;
-    }
-
-    .envelope-flap {
-      position: absolute; top: -2px; left: -2px;
-      width: 324px; height: 140px;
-      background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-      border: 2px solid #e9ecef; border-bottom: none;
-      clip-path: polygon(0 0, 100% 0, 50% 85%);
-      transform-origin: 50% 0%;
-      transition: transform 0.8s ease;
-      z-index: 10;
-    }
-    .envelope.opened .envelope-flap { transform: rotateX(-160deg); }
-
-    .letter {
-      position: absolute;
-      width: 280px; height: 380px;
-      background: #fff;
-      border: 1px solid #ccc;
-      left: 50%; top: 50%;
-      transform: translateX(-50%) translateY(200px);
-      transition: transform 0.8s ease;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-      z-index: 5;
-      padding: 25px;
-      opacity: 0;
-    }
-    .letter.pulled-out { transform: translateX(-50%) translateY(-180px); opacity: 1; }
-    .letter.content-visible { opacity: 1; }
-
-    .scroll-indicator {
-      position: absolute; bottom: 20px; left: 50%;
-      transform: translateX(-50%);
-      background: rgba(255,255,255,0.9);
-      padding: 8px 16px;
-      border-radius: 15px;
-      font-size: 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: 20;
-    }
-    .scroll-indicator.visible { opacity: 1; }
-
   </style>
 </head>
 <body>
-  <!-- Musik & Pop -->
+  <!-- Musik -->
   <audio id="bgMusic" src="music.mp3" loop></audio>
   <audio id="popSound" src="pop.wav"></audio>
 
-  <!-- Amplop -->
-  <div class="envelope-container" id="envelopeContainer">
-    <div class="envelope" id="envelope">
-      <div class="envelope-back"></div>
-      <div class="envelope-flap"></div>
-    </div>
-
-    <div class="letter" id="letter">
-      <p>💌 Surat spesial ini keluar dari amplop!</p>
-      <p>Kamu bisa scroll untuk mengontrol suratnya.</p>
+  <div class="envelope-container">
+    <div class="envelope">
+      <div class="flap"></div>
+      <div class="letter">
+        <p>💌 Surprise! Ini isi suratnya. Kamu bisa taruh pesan apa saja di sini.</p>
+      </div>
     </div>
   </div>
 
-  <div class="scroll-indicator" id="scrollIndicator">🖱️ Scroll untuk buka/tutup surat</div>
-
   <script>
-    const envelope = document.getElementById('envelope');
-    const letter = document.getElementById('letter');
-    const envelopeContainer = document.getElementById('envelopeContainer');
-    const scrollIndicator = document.getElementById('scrollIndicator');
-    const bgMusic = document.getElementById('bgMusic');
-    const popSound = document.getElementById('popSound');
+    const envelope = document.querySelector(".envelope");
+    const letter = document.querySelector(".letter");
+    const bgMusic = document.getElementById("bgMusic");
+    const popSound = document.getElementById("popSound");
 
-    let isOpened = false;
-    let letterPosition = 0;
+    let isOpen = false;
 
-    // klik amplop
-    envelopeContainer.addEventListener('click', () => {
-      if (!isOpened) {
-        envelope.classList.add('opened');
-        letter.classList.add('pulled-out');
-        isOpened = true;
-        letterPosition = 50;
-        bgMusic.play().catch(()=>{});  // musik mulai
-        popSound.play().catch(()=>{}); // efek pop
-        setTimeout(()=>letter.classList.add('content-visible'),800);
-        setTimeout(()=>scrollIndicator.classList.add('visible'),1000);
+    // Klik untuk buka amplop
+    envelope.addEventListener("click", () => {
+      if (!isOpen) {
+        envelope.classList.add("open");
+        isOpen = true;
+        bgMusic.play().catch(()=>{}); // mainkan musik
+        popSound.play().catch(()=>{}); // bunyi pop
       }
     });
 
-    // scroll kontrol
-    let scrollTimeout;
-    document.addEventListener('wheel', function(e) {
-      if (!isOpened) return;
-      e.preventDefault();
+    // Scroll untuk buka/tutup surat
+    window.addEventListener("wheel", (e) => {
+      if (!isOpen) return; // hanya jalan kalau amplop sudah kebuka
 
-      clearTimeout(scrollTimeout);
-      scrollIndicator.classList.add('visible');
-      scrollTimeout = setTimeout(()=>scrollIndicator.classList.remove('visible'),2000);
-
-      const delta = e.deltaY;
-      if (delta < 0) letterPosition = Math.min(letterPosition + 4, 100);
-      else letterPosition = Math.max(letterPosition - 4, 0);
-
-      const translateY = -180 - (letterPosition - 50) * 2.5;
-      letter.style.transform = `translateX(-50%) translateY(${translateY}px)`;
-
-      if (letterPosition <= 0) {
-        letter.classList.remove('content-visible');
-        setTimeout(() => {
-          envelope.classList.remove('opened');
-          letter.classList.remove('pulled-out');
-          letter.style.transform = 'translateX(-50%) translateY(200px)';
-          letter.style.opacity = '0';
-          isOpened = false;
-          letterPosition = 0;
-          scrollIndicator.classList.remove('visible');
-        }, 300);
+      if (e.deltaY > 0) {
+        // scroll ke bawah → keluarkan surat
+        letter.classList.add("show");
+      } else if (e.deltaY < 0) {
+        // scroll ke atas → masukkan surat
+        letter.classList.remove("show");
       }
-    }, { passive: false });
+    });
 
-    // generate hati random
+    // Fungsi buat hati
     function createHeart() {
       const heart = document.createElement("div");
       heart.classList.add("heart");
