@@ -32,7 +32,6 @@ body {
   100% { transform:translateY(-800px) scale(1.5); opacity:0; }
 }
 
-/* Envelope container */
 .envelope-container {
   position:relative;
   cursor:pointer;
@@ -42,7 +41,6 @@ body {
 }
 .envelope-container:hover { transform:scale(1.02); }
 
-/* Envelope */
 .envelope {
   width:400px; height:280px;
   background:linear-gradient(145deg,#ffffff 0%,#f8f9fa 100%);
@@ -89,14 +87,8 @@ body {
   z-index:5;
   padding:25px;
   overflow:hidden;
+  transition: transform 0.2s ease;
 }
-
-/* Animasi pull-out */
-@keyframes pullOut {
-  from { transform: translateX(-50%) translateY(50px); }
-  to { transform: translateX(-50%) translateY(-60px); }
-}
-.letter.pulled-out { animation: pullOut 0.8s forwards cubic-bezier(0.25,0.46,0.45,0.94); }
 
 .letter-content { opacity:0; transition: opacity 0.6s ease 0.3s; }
 .letter.content-visible .letter-content { opacity:1; }
@@ -144,7 +136,6 @@ body {
 </head>
 <body>
 
-<!-- Audio dari GitHub -->
 <audio id="bgMusic" src="https://raw.githubusercontent.com/username/repo/main/music.mp3" loop></audio>
 <audio id="popSound" src="https://raw.githubusercontent.com/username/repo/main/pop.wav"></audio>
 
@@ -175,51 +166,42 @@ body {
 </div>
 
 <div class="scroll-indicator" id="scrollIndicator">🖱️ Gunakan scroll untuk mengontrol surat</div>
-<div class="instructions">Klik amplop untuk buka/tutup • Scroll ↑↓ untuk mengontrol surat</div>
+<div class="instructions">Klik amplop untuk buka/tutup • Scroll ↑↓ untuk mengangkat/menutup surat</div>
 
 <script>
 const envelopeContainer = document.getElementById('envelopeContainer');
 const envelope = document.getElementById('envelope');
 const letter = document.getElementById('letter');
-const letterBody = document.getElementById('letterBody');
 const scrollIndicator = document.getElementById('scrollIndicator');
 const bgMusic = document.getElementById('bgMusic');
 const popSound = document.getElementById('popSound');
 
-let isOpened=false;
-let letterPosition=50;
-let bgStarted=false;
+let isOpened = false;
+let letterOffset = 50; // posisi Y surat
+let maxOffset = -60;   // maksimal keluar
+let minOffset = 50;    // posisi di dalam amplop
+let bgStarted = false;
 
-// buka amplop
 function openEnvelope() {
   envelope.classList.add('opened');
-  letter.classList.remove('content-visible');
-  letter.classList.add('pulled-out');
-  setTimeout(()=>letter.classList.add('content-visible'),800);
-  setTimeout(()=>scrollIndicator.classList.add('visible'),1000);
-
-  try{ popSound.currentTime=0; popSound.play(); } catch(e){}
+  letter.classList.add('content-visible');
   if(!bgStarted){ bgStarted=true; bgMusic.play().catch(()=>{}); }
+  try{ popSound.currentTime=0; popSound.play(); } catch(e){}
   isOpened=true;
 }
 
-// tutup amplop
 function closeEnvelope() {
+  envelope.classList.remove('opened');
   letter.classList.remove('content-visible');
-  scrollIndicator.classList.remove('visible');
-  letter.classList.remove('pulled-out');
-  setTimeout(()=>{
-    envelope.classList.remove('opened');
-    letterPosition=50;
-    letter.scrollTop=0;
-    try{ popSound.currentTime=0; popSound.play(); }catch(e){}
-  },400);
+  letterOffset = minOffset;
+  letter.style.transform = `translateX(-50%) translateY(${letterOffset}px)`;
+  try{ popSound.currentTime=0; popSound.play(); } catch(e){}
   isOpened=false;
 }
 
 envelopeContainer.addEventListener('click',()=>{ if(isOpened) closeEnvelope(); else openEnvelope(); });
 
-// scroll control
+// scroll control: naik/turun surat
 let scrollTimeout;
 document.addEventListener('wheel',function(e){
   if(!isOpened) return;
@@ -228,16 +210,24 @@ document.addEventListener('wheel',function(e){
   scrollIndicator.classList.add('visible');
   scrollTimeout=setTimeout(()=>scrollIndicator.classList.remove('visible'),1800);
 
-  const delta=e.deltaY;
-  if(delta<0) letter.scrollTop = Math.max(letter.scrollTop - 20,0);
-  else letter.scrollTop = Math.min(letter.scrollTop + 20, letter.scrollHeight);
+  const delta = e.deltaY;
+  if(delta < 0){ // scroll up, tarik surat keluar
+    letterOffset = Math.max(letterOffset - 10, maxOffset);
+  } else {      // scroll down, masukkan surat
+    letterOffset = Math.min(letterOffset + 10, minOffset);
+  }
+
+  letter.style.transform = `translateX(-50%) translateY(${letterOffset}px)`;
+
+  // tutup amplop otomatis jika surat kembali ke posisi awal
+  if(letterOffset === minOffset) closeEnvelope();
 
 },{passive:false});
 
-// animasi envelope muncul
+// animasi masuk
 window.addEventListener('load',()=>{ envelopeContainer.style.animation='fadeInUp 1s ease-out'; });
 
-// hati floating
+// floating hearts
 function createHeart(){
   const heart=document.createElement('div');
   heart.className='heart';
