@@ -6,6 +6,7 @@
   <style>
     body {
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
@@ -14,47 +15,23 @@
       overflow: hidden;
     }
 
-    /* Background hati */
-    .hearts {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      z-index: 0;
-    }
-
-    .heart {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background: pink;
-      transform: rotate(45deg);
-      animation: floatUp 8s linear infinite;
-    }
-
-    .heart::before,
-    .heart::after {
-      content: "";
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      background: pink;
+    /* Tombol Open Me */
+    .open-btn {
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
+      border: none;
+      background: hotpink;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: transform 0.2s ease;
+      z-index: 2;
     }
-
-    .heart::before {
-      top: -10px;
-      left: 0;
-    }
-
-    .heart::after {
-      left: -10px;
-      top: 0;
-    }
-
-    @keyframes floatUp {
-      0% { transform: translateY(100vh) rotate(45deg); opacity: 1; }
-      100% { transform: translateY(-10vh) rotate(45deg); opacity: 0; }
+    .open-btn:hover {
+      transform: scale(1.1);
     }
 
     /* Amplop */
@@ -65,7 +42,6 @@
       background: #ff4d4d;
       border-radius: 5px;
       overflow: hidden;
-      cursor: pointer;
       z-index: 1;
     }
 
@@ -81,11 +57,12 @@
       border-bottom: 100px solid #ff9999;
     }
 
+    /* Surat */
     .letter {
       position: absolute;
-      top: 100%; /* tersembunyi di bawah */
+      bottom: 0;
       left: 50%;
-      transform: translateX(-50%);
+      transform: translate(-50%, 100%); /* tersembunyi di bawah */
       width: 250px;
       height: 150px;
       background: white;
@@ -93,20 +70,20 @@
       padding: 20px;
       box-sizing: border-box;
       text-align: center;
-      transition: top 1s ease;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: transform 1s ease;
     }
 
-    /* saat amplop terbuka */
+    /* Amplop terbuka */
     .envelope.open .letter {
-      top: 20px; /* keluar */
+      transform: translate(-50%, -110%); /* naik ke atas */
     }
   </style>
 </head>
 <body>
 
-<!-- Background hati -->
-<div class="hearts"></div>
+<!-- Tombol -->
+<button class="open-btn" id="openBtn">Open Me</button>
 
 <!-- Amplop -->
 <div class="envelope" id="envelope">
@@ -116,41 +93,41 @@
   </div>
 </div>
 
-<!-- Audio efek pop -->
-<audio id="popSound" src="pop.mp3" preload="auto"></audio>
-
-<!-- Latar musik -->
-<audio id="bgMusic" src="music.mp3" loop></audio>
+<!-- Suara Pop -->
+<audio id="popSound" src="pop.wav" preload="auto"></audio>
 
 <script>
-  // Generate hati random
-  const heartsContainer = document.querySelector('.hearts');
-  for (let i = 0; i < 20; i++) {
-    let heart = document.createElement('div');
-    heart.className = 'heart';
-    heart.style.left = Math.random() * 100 + 'vw';
-    heart.style.animationDuration = (5 + Math.random() * 5) + 's';
-    heart.style.opacity = Math.random();
-    heart.style.background = Math.random() > 0.5 ? 'pink' : 'hotpink';
-    heartsContainer.appendChild(heart);
+  const envelope = document.getElementById('envelope');
+  const openBtn = document.getElementById('openBtn');
+  const popSound = document.getElementById('popSound');
+
+  // Fungsi play pop
+  function playPop() {
+    popSound.currentTime = 0;
+    popSound.play().catch(err => {
+      console.log("Pop sound blocked until user interacts:", err);
+    });
   }
 
-  // Toggle buka/tutup surat + bunyi pop
-  const envelope = document.getElementById('envelope');
-  const popSound = document.getElementById('popSound');
-  envelope.addEventListener('click', () => {
+  // Klik tombol bulat
+  openBtn.addEventListener('click', () => {
     envelope.classList.toggle('open');
-    popSound.currentTime = 0;
-    popSound.play();
+    playPop();
   });
 
-  // Autoplay musik background (butuh interaksi user di beberapa browser)
-  const bgMusic = document.getElementById('bgMusic');
-  document.body.addEventListener('click', () => {
-    if (bgMusic.paused) {
-      bgMusic.play().catch(()=>{}); // mulai musik setelah klik pertama
+  // Scroll effect
+  let lastScrollTop = 0;
+  window.addEventListener('scroll', () => {
+    let st = window.scrollY;
+    if (st > lastScrollTop) {
+      envelope.classList.remove('open'); // tutup
+      playPop();
+    } else {
+      envelope.classList.add('open'); // buka
+      playPop();
     }
-  }, { once: true });
+    lastScrollTop = st <= 0 ? 0 : st;
+  });
 </script>
 
 </body>
