@@ -18,7 +18,6 @@
       padding: 20px;
     }
 
-    /* === HATI BACKGROUND === */
     .heart {
       position: absolute;
       color: rgba(255, 0, 100, 0.6);
@@ -84,7 +83,7 @@
       border: 1px solid #dee2e6; border-radius: 6px;
       left: 50%; top: 50%;
       transform: translateX(-50%) translateY(200px);
-      transition: transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
+      transition: transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94), opacity 0.5s ease;
       box-shadow: 0 8px 32px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8);
       z-index: 5;
       padding: 25px; opacity: 0;
@@ -186,8 +185,18 @@
 
     function openEnvelope() {
       envelope.classList.add('opened');
-      letter.classList.add('pulled-out');
-      setTimeout(() => letter.classList.add('content-visible'), 800);
+
+      // Reset posisi surat dulu
+      letter.classList.remove('pulled-out', 'content-visible');
+      letter.style.transform = 'translateX(-50%) translateY(200px)';
+      letter.style.opacity = '0';
+
+      // Animasi keluar surat
+      requestAnimationFrame(() => {
+        letter.classList.add('pulled-out');
+        setTimeout(() => letter.classList.add('content-visible'), 800);
+      });
+
       setTimeout(() => scrollIndicator.classList.add('visible'), 1000);
 
       try { popSound.currentTime = 0; popSound.play(); } catch(e){}
@@ -205,8 +214,6 @@
       setTimeout(() => {
         envelope.classList.remove('opened');
         try { popSound.currentTime = 0; popSound.play(); } catch(e){}
-        letter.style.transform = 'translateX(-50%) translateY(200px)';
-        letter.style.opacity = '0';
         letterPosition = 50;
       }, 400);
       isOpened = false;
