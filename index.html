@@ -2,59 +2,83 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Amplop Surprise</title>
+  <title>Love Letter</title>
   <style>
     body {
+      margin: 0;
+      height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100vh;
       background: #fff0f5;
+      overflow: hidden;
       font-family: sans-serif;
     }
 
-    /* Tombol kecil di tengah */
-    .btn-open {
-      background: hotpink;
-      color: white;
-      border: none;
-      border-radius: 20px;
-      padding: 6px 14px;
-      font-size: 14px;
-      cursor: pointer;
-      margin-bottom: 20px;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-      transition: background 0.3s;
-    }
-    .btn-open:hover {
-      background: deeppink;
+    /* Hati beterbangan */
+    .heart {
+      position: fixed;
+      bottom: -20px;
+      color: #ff4d4d;
+      font-size: 20px;
+      animation: floatUp 6s linear infinite;
+      opacity: 0.8;
+      z-index: 1;
     }
 
-    /* Amplop */
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-120vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    /* Amplop container */
     .envelope {
       position: relative;
-      width: 300px;
-      height: 200px;
-      background: #ff4d4d;
-      border-radius: 4px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      width: 280px;
+      height: 180px;
+      background: #d9a066;
+      border-radius: 6px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.25);
       overflow: hidden;
+      z-index: 5;
+      cursor: pointer;
     }
 
-    /* Flap segitiga */
+    /* Segel hati */
+    .seal {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 28px;
+      color: #ff4d4d;
+      z-index: 10;
+      transition: transform 0.3s;
+    }
+    .seal:hover {
+      transform: translateX(-50%) scale(1.2);
+    }
+
+    /* Flap */
     .flap {
       position: absolute;
       top: 0;
       left: 0;
       width: 0;
       height: 0;
-      border-left: 150px solid transparent;
-      border-right: 150px solid transparent;
-      border-top: 100px solid #ff9999;
+      border-left: 140px solid transparent;
+      border-right: 140px solid transparent;
+      border-top: 90px solid #e8c48c;
       transform-origin: top;
       transition: transform 0.8s ease;
-      z-index: 2;
+      z-index: 6;
     }
 
     /* Surat */
@@ -63,20 +87,20 @@
       bottom: 0;
       left: 50%;
       transform: translateX(-50%) translateY(100%);
-      width: 260px;
-      height: 160px;
-      background: white;
-      border-radius: 6px;
+      width: 240px;
+      height: 150px;
+      background: #fff;
+      border-radius: 4px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       padding: 15px;
       text-align: center;
       transition: transform 1s ease;
-      z-index: 1;
+      z-index: 4;
     }
 
     .letter h3 {
       margin: 0 0 10px;
-      color: #ff4d4d;
+      color: #d94d4d;
     }
 
     /* State terbuka */
@@ -90,31 +114,56 @@
 </head>
 <body>
 
-  <!-- Tombol -->
-  <button class="btn-open" id="btnOpen">Open Me</button>
-
   <!-- Amplop -->
   <div class="envelope" id="envelope">
     <div class="flap"></div>
+    <div class="seal">❤️</div>
     <div class="letter">
-      <h3>For You ❤️</h3>
-      <p>Surprise! Ini pesan cintamu 💌</p>
+      <h3>For You 💌</h3>
+      <p>Pesan manis ini khusus buatmu ✨</p>
     </div>
   </div>
 
-  <!-- Suara Pop -->
+  <!-- Suara -->
   <audio id="popSound" src="pop.wav" preload="auto"></audio>
+  <audio id="bgMusic" src="music.mp3" preload="auto" loop></audio>
 
 <script>
-  const btn = document.getElementById("btnOpen");
   const envelope = document.getElementById("envelope");
   const popSound = document.getElementById("popSound");
+  const bgMusic = document.getElementById("bgMusic");
 
-  btn.addEventListener("click", () => {
+  let musicStarted = false;
+
+  envelope.addEventListener("click", () => {
     envelope.classList.toggle("open");
+
+    // mainkan pop sound
     popSound.currentTime = 0;
     popSound.play().catch(()=>{});
+
+    // mainkan bg music hanya sekali saat klik pertama
+    if (!musicStarted) {
+      bgMusic.play().catch(()=>{});
+      musicStarted = true;
+    }
   });
+
+  // generate hearts
+  function createHeart() {
+    const heart = document.createElement("div");
+    heart.classList.add("heart");
+    heart.innerText = "❤️";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (Math.random() * 20 + 15) + "px";
+    document.body.appendChild(heart);
+
+    setTimeout(() => {
+      heart.remove();
+    }, 6000);
+  }
+
+  setInterval(createHeart, 800);
 </script>
 </body>
 </html>
