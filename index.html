@@ -1,84 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
   <title>Love Letter</title>
   <style>
     body {
       margin: 0;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
       background: #fdeef2;
       font-family: sans-serif;
     }
 
-    .envelope-wrap {
+    .envelope {
       position: relative;
-      width: 420px;
-      height: 280px;
-      --svg-h: 280;   /* viewBox height dari SVG */
-      --apex-y: 150;  /* koordinat apex triangle flap */
+      width: 300px;
+      height: 200px;
+      background: #d19a66;
+      border-radius: 6px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      overflow: hidden;
     }
 
-    svg {
-      width: 100%;
-      height: 100%;
-      display: block;
+    /* flap segitiga */
+    .envelope::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 150px solid transparent;
+      border-right: 150px solid transparent;
+      border-bottom: 100px solid #e0b072;
+      z-index: 2;
     }
 
+    /* surat di dalam */
     .letter {
       position: absolute;
-      top: 40px;
+      top: 100px; /* mulai tersembunyi */
       left: 50%;
       transform: translateX(-50%);
-      width: 80%;
-      height: 65%;
+      width: 90%;
+      height: 140px;
       background: #fff;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
-      padding: 16px;
+      border-radius: 6px;
+      padding: 12px;
       box-sizing: border-box;
-      border-radius: 8px;
-      z-index: 3;
-      display: none;
+      box-shadow: 0 0 6px rgba(0,0,0,0.15);
+      z-index: 1;
+      transition: top 0.8s;
     }
 
+    .letter.show {
+      top: -40px; /* keluar ke atas */
+      z-index: 3;
+    }
+
+    /* seal hati */
     .seal {
       position: absolute;
+      top: 95px; /* tepat di ujung segitiga */
       left: 50%;
-      top: calc(var(--apex-y) / var(--svg-h) * 100%);
       transform: translate(-50%, -50%);
-      width: 54px;
-      height: 54px;
+      width: 46px;
+      height: 46px;
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      color: #fff;
       background: radial-gradient(circle at 30% 25%, #ff7b88, #ff5960);
-      box-shadow: 0 8px 18px rgba(0,0,0,0.18), inset 0 -6px 12px rgba(0,0,0,0.06);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 22px;
       cursor: pointer;
-      z-index: 7;
+      z-index: 4;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2), inset 0 -4px 8px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+
+    .seal:active {
+      transform: translate(-50%, -50%) scale(0.9);
     }
   </style>
 </head>
 <body>
-  <div class="envelope-wrap" id="envWrap">
-    <svg viewBox="0 0 420 280">
-      <!-- body -->
-      <rect x="0" y="70" width="420" height="210" fill="#d19a66" rx="6" ry="6"/>
-      <!-- flap segitiga -->
-      <polygon points="0,70 210,0 420,70" fill="#e0b072"/>
-    </svg>
-
+  <div class="envelope">
     <div class="letter" id="letter">
       <h3>💌 Dear You</h3>
       <p>This is a secret love message hidden inside the envelope.</p>
     </div>
-
     <div class="seal" id="seal">❤️</div>
   </div>
 
@@ -87,8 +99,8 @@
     const letter = document.getElementById("letter");
 
     seal.addEventListener("click", () => {
-      seal.style.display = "none";
-      letter.style.display = "block";
+      seal.style.display = "none";      // seal hilang
+      letter.classList.add("show");     // surat keluar
     });
   </script>
 </body>
