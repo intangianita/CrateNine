@@ -32,23 +32,20 @@ body {
   100% { transform:translateY(-800px) scale(1.5); opacity:0; }
 }
 
-/* Amplop */
 .envelope-container {
   position:relative;
   cursor:pointer;
-  width:400px;
-  height:300px;
-  transform-style:preserve-3d;
   z-index:10;
 }
 .envelope {
-  width:100%; height:100%;
+  width:400px; height:300px;
   background:linear-gradient(145deg,#ffffff 0%,#f8f9fa 100%);
   border:2px solid #e9ecef;
   position:relative;
   box-shadow:0 8px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8);
   border-radius:12px;
   overflow:hidden;
+  transform: translate(-50%, -50%);
 }
 .envelope-back {
   position:absolute; top:0; left:0; width:100%; height:100%;
@@ -57,7 +54,7 @@ body {
 }
 .envelope-flap {
   position:absolute; top:-2px; left:-2px;
-  width:404px; height:160px;
+  width:404px; height:180px;
   background:linear-gradient(145deg,#ffffff 0%,#f8f9fa 100%);
   border:2px solid #e9ecef; border-bottom:none;
   clip-path:polygon(0 0,100% 0,50% 85%);
@@ -69,52 +66,39 @@ body {
 .envelope.opened .envelope-flap { transform: rotateX(-160deg); }
 
 .envelope-inner {
-  position:absolute; top:8px; left:8px; right:8px; bottom:8px;
+  position:absolute; top:10px; left:10px; right:10px; bottom:10px;
   background:linear-gradient(145deg,#f8f9fa 0%,#e9ecef 100%);
   border-radius:6px;
   box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* Surat */
 .letter {
   position:absolute;
-  width:92%; height:80%;
+  width:360px; height:440px;
   background:linear-gradient(145deg,#ffffff 0%,#fefefe 100%);
-  border:1px solid #dee2e6; border-radius:8px;
+  border:1px solid #dee2e6; border-radius:6px;
   left:50%; top:50%;
-  transform:translate(-50%, -50%); /* tepat di tengah amplop */
-  opacity:0;
+  transform:translate(-50%, -50%); 
   box-shadow:0 8px 32px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8);
   z-index:5;
-  padding:20px;
+  padding:25px;
   overflow:hidden;
 }
-.letter.pop-up { 
-  opacity:1;
-  transition: transform 0.5s ease, opacity 0.5s ease;
-}
-
-/* konten surat */
-.letter-content {
-  opacity:0;
-  height:100%;
-  overflow-y:hidden; 
-  transition: opacity 0.6s ease 0.3s;
-}
+.letter-content { opacity:0; transition: opacity 0.6s ease 0.3s; }
 .letter.content-visible .letter-content { opacity:1; }
 
-.letter-header { text-align:center; margin-bottom:20px; border-bottom:2px solid #6c757d; }
+.letter-header { text-align:center; margin-bottom:20px; padding-bottom:12px; border-bottom:2px solid #6c757d; }
 .letter-title { font-size:22px; font-weight:bold; color:#495057; margin-bottom:6px; }
 .letter-date { font-size:12px; color:#6c757d; font-style:italic; }
 .letter-body { text-align:justify; margin-bottom:15px; }
 .letter-signature { text-align:right; margin-top:25px; font-style:italic; color:#495057; }
 
 .stamp {
-  position:absolute; top:15px; right:15px; width:60px; height:60px;
+  position:absolute; top:15px; right:15px; width:50px; height:50px;
   background:linear-gradient(145deg,#dc3545 0%,#c82333 100%);
-  border:3px solid #fff; border-radius:6px;
+  border:3px solid #fff; border-radius:4px;
   display:flex; align-items:center; justify-content:center;
-  color:white; font-size:14px; font-weight:bold;
+  color:white; font-size:12px; font-weight:bold;
   box-shadow:0 4px 12px rgba(220,53,69,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
   z-index:8;
 }
@@ -125,6 +109,21 @@ body {
   background:rgba(255,255,255,0.9); padding:10px 20px;
   border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,0.1);
   z-index:10;
+}
+
+.scroll-indicator {
+  position:absolute; top:20px; left:50%; transform:translateX(-50%);
+  color:#495057; font-size:13px; opacity:0;
+  transition:opacity 0.3s ease;
+  background:rgba(255,255,255,0.95); padding:8px 16px;
+  border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.1);
+  z-index:10;
+}
+.scroll-indicator.visible { opacity:1; }
+
+@keyframes fadeInUp {
+  from { opacity:0; transform:translateY(30px) scale(0.9); }
+  to { opacity:1; transform:translateY(0) scale(1); }
 }
 </style>
 </head>
@@ -149,57 +148,75 @@ body {
       <div class="letter-body">
         <p><strong>Kepada yang terkasih,</strong></p>
         <p>Selamat datang di amplop interaktif dengan desain realistis!</p>
-        <p>Scroll mouse akan mengangkat surat ke atas, atau menurunkannya kembali ke amplop.</p>
+        <p>Klik amplop untuk membuka atau menutup, lalu scroll untuk mengontrol surat.</p>
       </div>
       <div class="letter-signature">Dengan penuh kreativitas,<br><strong>Canva Code</strong> ✨</div>
     </div>
   </div>
 </div>
 
-<div class="instructions">Klik amplop untuk buka/tutup • Scroll untuk mengangkat surat</div>
+<div class="scroll-indicator" id="scrollIndicator">🖱️ Geser scroll untuk mengontrol surat</div>
+<div class="instructions">Klik amplop untuk buka/tutup • Scroll ↑↓ untuk mengontrol surat</div>
 
 <script>
-const envelopeContainer=document.getElementById('envelopeContainer');
-const envelope=document.getElementById('envelope');
-const letter=document.getElementById('letter');
-const bgMusic=document.getElementById('bgMusic');
-const popSound=document.getElementById('popSound');
+const envelopeContainer = document.getElementById('envelopeContainer');
+const envelope = document.getElementById('envelope');
+const letter = document.getElementById('letter');
+const scrollIndicator = document.getElementById('scrollIndicator');
+const bgMusic = document.getElementById('bgMusic');
+const popSound = document.getElementById('popSound');
 
 let isOpened=false;
-let letterOffset=0; 
+let letterOffset=0; // posisi relatif di dalam amplop
 let bgStarted=false;
 
-function openEnvelope(){
+function openEnvelope() {
   envelope.classList.add('opened');
-  letter.classList.add('pop-up');
-  setTimeout(()=>letter.classList.add('content-visible'),300);
-  try{ popSound.currentTime=0; popSound.play(); }catch(e){}
+  letterOffset = 0;
+  letter.style.transform=`translate(-50%, calc(-50% + ${letterOffset}px))`;
+  letter.classList.add('content-visible');
+
+  try{ popSound.currentTime=0; popSound.play(); } catch(e){}
   if(!bgStarted){ bgStarted=true; bgMusic.play().catch(()=>{}); }
   isOpened=true;
 }
 
-function closeEnvelope(){
-  letter.classList.remove('content-visible');
-  letter.classList.remove('pop-up');
+function closeEnvelope() {
+  envelope.classList.remove('opened');
   letterOffset=0;
-  letter.style.transform=`translate(-50%, -50%)`; // kembali posisi tengah
-  setTimeout(()=>{ envelope.classList.remove('opened'); try{ popSound.currentTime=0; popSound.play(); }catch(e){} },300);
+  letter.style.transform=`translate(-50%, calc(-50% + ${letterOffset}px))`;
   isOpened=false;
 }
 
-envelopeContainer.addEventListener('click',()=>{ if(isOpened) closeEnvelope(); else openEnvelope(); });
+envelopeContainer.addEventListener('click',()=>{ 
+  if(isOpened) closeEnvelope(); 
+  else openEnvelope(); 
+});
 
 // scroll efek geser surat
+let scrollTimeout;
 document.addEventListener('wheel',function(e){
   if(!isOpened) return;
   e.preventDefault();
+  clearTimeout(scrollTimeout);
+  scrollIndicator.classList.add('visible');
+  scrollTimeout=setTimeout(()=>scrollIndicator.classList.remove('visible'),1800);
+
   const delta=e.deltaY;
-  letterOffset-=delta*0.3; 
-  letterOffset=Math.max(-150, Math.min(0, letterOffset)); 
+  letterOffset -= delta*0.3; 
+  letterOffset = Math.max(-250, Math.min(0, letterOffset)); // max scroll ke atas -250px
   letter.style.transform=`translate(-50%, calc(-50% + ${letterOffset}px))`;
+
+  // jika surat dikembalikan ke posisi awal saat scroll down, tutup amplop otomatis
+  if(letterOffset === 0 && delta > 0){
+    closeEnvelope();
+  }
 },{passive:false});
 
-// floating hearts
+// animasi envelope masuk
+window.addEventListener('load',()=>{ envelopeContainer.style.animation='fadeInUp 1s ease-out'; });
+
+// hati floating
 function createHeart(){
   const heart=document.createElement('div');
   heart.className='heart';
