@@ -191,11 +191,12 @@
       letter.style.transform = 'translateX(-50%) translateY(200px)';
       letter.style.opacity = '0';
 
+      // Force reflow supaya browser membaca ulang style
+      void letter.offsetHeight;
+
       // Animasi keluar surat
-      requestAnimationFrame(() => {
-        letter.classList.add('pulled-out');
-        setTimeout(() => letter.classList.add('content-visible'), 800);
-      });
+      letter.classList.add('pulled-out');
+      setTimeout(() => letter.classList.add('content-visible'), 800);
 
       setTimeout(() => scrollIndicator.classList.add('visible'), 1000);
 
