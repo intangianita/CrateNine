@@ -1,169 +1,252 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Love Letter</title>
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background: #fff0f5;
-      overflow: hidden;
-      font-family: sans-serif;
-    }
-
-    /* Hati beterbangan */
-    .heart {
-      position: fixed;
-      bottom: -20px;
-      color: #ff4d4d;
-      font-size: 20px;
-      animation: floatUp 6s linear infinite;
-      opacity: 0.8;
-      z-index: 1;
-    }
-
-    @keyframes floatUp {
-      0% {
-        transform: translateY(0) scale(1);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-120vh) scale(1.5);
-        opacity: 0;
-      }
-    }
-
-    /* Amplop container */
-    .envelope {
-      position: relative;
-      width: 280px;
-      height: 180px;
-      background: #d9a066;
-      border-radius: 6px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.25);
-      overflow: hidden;
-      z-index: 5;
-      cursor: pointer;
-    }
-
-    /* Segel hati */
-    .seal {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 28px;
-      color: #ff4d4d;
-      z-index: 10;
-      transition: transform 0.3s;
-    }
-    .seal:hover {
-      transform: translateX(-50%) scale(1.2);
-    }
-
-    /* Flap */
-    .flap {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 0;
-      height: 0;
-      border-left: 140px solid transparent;
-      border-right: 140px solid transparent;
-      border-top: 90px solid #e8c48c;
-      transform-origin: top;
-      transition: transform 0.8s ease;
-      z-index: 6;
-    }
-
-    /* Surat */
-    .letter {
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%) translateY(100%);
-      width: 240px;
-      height: 150px;
-      background: #fff;
-      border-radius: 4px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      padding: 15px;
-      text-align: center;
-      transition: transform 1s ease;
-      z-index: 4;
-    }
-
-    .letter h3 {
-      margin: 0 0 10px;
-      color: #d94d4d;
-    }
-
-    /* State terbuka */
-    .open .flap {
-      transform: rotateX(180deg);
-    }
-    .open .letter {
-      transform: translateX(-50%) translateY(-40%);
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Amplop -->
-  <div class="envelope" id="envelope">
-    <div class="flap"></div>
-    <div class="seal">❤️</div>
-    <div class="letter">
-      <h3>For You 💌</h3>
-      <p>Pesan manis ini khusus buatmu ✨</p>
-    </div>
-  </div>
-
-  <!-- Suara -->
-  <audio id="popSound" src="pop.wav" preload="auto"></audio>
-  <audio id="bgMusic" src="music.mp3" preload="auto" loop></audio>
-
-<script>
-  const envelope = document.getElementById("envelope");
-  const popSound = document.getElementById("popSound");
-  const bgMusic = document.getElementById("bgMusic");
-
-  let musicStarted = false;
-
-  envelope.addEventListener("click", () => {
-    envelope.classList.toggle("open");
-
-    // mainkan pop sound
-    popSound.currentTime = 0;
-    popSound.play().catch(()=>{});
-
-    // mainkan bg music hanya sekali saat klik pertama
-    if (!musicStarted) {
-      bgMusic.play().catch(()=>{});
-      musicStarted = true;
-    }
-  });
-
-  // generate hearts
-  function createHeart() {
-    const heart = document.createElement("div");
-    heart.classList.add("heart");
-    heart.innerText = "❤️";
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = (Math.random() * 20 + 15) + "px";
-    document.body.appendChild(heart);
-
-    setTimeout(() => {
-      heart.remove();
-    }, 6000);
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Amplop (SVG) — Surprise</title>
+<style>
+  :root{
+    --bg:#fff0f5;
+    --env-body:#f07b7b;
+    --env-inner:#ffdede;
+    --seal-bg:#ff5960;
+  }
+  html,body{height:100%; margin:0; background:var(--bg); font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial; -webkit-font-smoothing:antialiased;}
+  .stage{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    position:relative;
+    padding:48px 16px;
   }
 
-  setInterval(createHeart, 800);
+  /* container untuk envelope + letter */
+  .envelope-wrap{
+    width:420px;
+    max-width:92vw;
+    height:320px;
+    position:relative;
+    display:block;
+    overflow:visible; /* penting: biar letter bisa keluar */
+    -webkit-user-select:none;
+    user-select:none;
+  }
+
+  /* SVG envelope (body + flap) */
+  .env-svg{
+    width:100%;
+    height:auto;
+    display:block;
+    pointer-events:none;
+  }
+
+  /* letter (HTML div) */
+  .letter{
+    position:absolute;
+    left:50%;
+    bottom:36px; /* tempat letter nascent */
+    transform:translate(-50%, 110%); /* tersembunyi di bawah */
+    width:72%;
+    max-width:320px;
+    min-width:220px;
+    height:60%;
+    background: linear-gradient(#fffafc,#fff);
+    border-radius:8px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.14);
+    padding:18px 16px;
+    box-sizing:border-box;
+    transition: transform 900ms cubic-bezier(.2,.9,.3,1);
+    z-index:2;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-start;
+    gap:8px;
+  }
+  .letter .to{ font-size:14px; color:#d9534f; font-weight:600; }
+  .letter p{ margin:0; color:#333; line-height:1.4; font-size:15px; }
+
+  /* seal (clickable heart) */
+  .seal {
+    position:absolute;
+    left:50%;
+    bottom:24px;
+    transform:translateX(-50%);
+    width:54px;
+    height:54px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    color:#fff;
+    background:radial-gradient(circle at 30% 25%, #ff7b88, var(--seal-bg));
+    box-shadow:0 8px 18px rgba(0,0,0,0.18), inset 0 -6px 12px rgba(0,0,0,0.06);
+    cursor:pointer;
+    z-index:6;
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .seal:active{ transform: translateX(-50%) scale(.96); }
+
+  /* flap animation (manipulasi melalui class .open pada .envelope-wrap) */
+  /* The flap group will be targeted by JS to add/remove .open, but we style with a class on the wrapper */
+  .envelope-wrap .flap {
+    transform-origin: 50% 24%; /* set origin near top-center of flap shape */
+    transition: transform 700ms cubic-bezier(.2,.9,.3,1);
+    transform: translateY(0) rotate(0deg);
+    z-index:5;
+  }
+  .envelope-wrap.open .flap {
+    /* move flap up and rotate a bit to reveal letter */
+    transform: translateY(-118px) rotate(180deg);
+  }
+
+  /* when open, slide letter up */
+  .envelope-wrap.open .letter{
+    transform: translate(-50%, -48%);
+  }
+
+  /* floating hearts */
+  .floating-heart{
+    position:fixed;
+    bottom:-20px;
+    font-size:18px;
+    pointer-events:none;
+    animation: floatUp 6.5s linear forwards;
+    opacity:.95;
+    z-index:1;
+  }
+  @keyframes floatUp{
+    0%{ transform: translateY(0) scale(0.95); opacity:1; }
+    30%{ transform: translateY(-30vh) scale(1.05); opacity:0.95; }
+    100%{ transform: translateY(-140vh) scale(1.2); opacity:0; }
+  }
+
+  /* small responsive tweaks */
+  @media (max-width:420px){
+    .letter{ width:78%; height:62%; }
+    .seal{ width:48px; height:48px; font-size:20px; bottom:22px; }
+  }
+
+  /* subtle page hint */
+  .hint { position: absolute; top:22px; left:50%; transform:translateX(-50%); color:#c33; font-size:13px; opacity:.9 }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="envelope-wrap" id="envWrap" aria-hidden="false" title="Klik segel hati untuk buka">
+    <!-- SVG envelope: body + flap -->
+    <svg class="env-svg" viewBox="0 0 420 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Amplop">
+      <!-- body -->
+      <defs>
+        <linearGradient id="gBody" x1="0" x2="1">
+          <stop offset="0" stop-color="#f7a9a9"/>
+          <stop offset="1" stop-color="#f16e6e"/>
+        </linearGradient>
+        <linearGradient id="gInner" x1="0" x2="1">
+          <stop offset="0" stop-color="#ffecec"/>
+          <stop offset="1" stop-color="#ffdada"/>
+        </linearGradient>
+        <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#000" flood-opacity="0.14"/>
+        </filter>
+      </defs>
+
+      <!-- envelope back (inner visible top triangle) -->
+      <polygon points="30,70 210,150 390,70" fill="url(#gInner)" />
+
+      <!-- envelope body -->
+      <rect x="20" y="70" width="380" height="160" rx="10" ry="10" fill="url(#gBody)" filter="url(#shadow)"></rect>
+
+      <!-- flap (triangle) --- give it a class to animate -->
+      <g class="flap" id="flapGroup">
+        <polygon points="30,70 210,10 390,70" fill="#ffd1d1" stroke="rgba(255,255,255,0.06)" stroke-width="0.6"></polygon>
+        <!-- small inner highlight -->
+        <polygon points="55,70 210,28 365,70" fill="#ffcfcf" opacity="0.85"></polygon>
+      </g>
+
+      <!-- small decorative highlights -->
+      <ellipse cx="350" cy="200" rx="22" ry="10" fill="rgba(255,255,255,0.08)"></ellipse>
+    </svg>
+
+    <!-- letter (HTML so text is crisp and not clipped) -->
+    <div class="letter" id="letter">
+      <div class="to">To: My Love</div>
+      <p>Hi sayang, ini kejutan kecil untukmu. Semoga hari-harimu selalu manis 💌</p>
+    </div>
+
+    <!-- seal (the clickable heart) -->
+    <div class="seal" id="seal" role="button" aria-pressed="false" aria-label="Buka amplop">❤️</div>
+  </div>
+  <!-- hint -->
+  <div class="hint">Klik segel hati untuk buka amplop</div>
+</div>
+
+<!-- audio -->
+<audio id="pop" src="pop.wav" preload="auto"></audio>
+<audio id="music" src="music.mp3" preload="auto" loop></audio>
+
+<script>
+  const envWrap = document.getElementById('envWrap');
+  const seal = document.getElementById('seal');
+  const pop = document.getElementById('pop');
+  const music = document.getElementById('music');
+  let musicStarted = false;
+
+  function toggleOpen(){
+    const open = envWrap.classList.toggle('open');
+    seal.setAttribute('aria-pressed', open ? 'true' : 'false');
+    // pop sound
+    try{
+      pop.currentTime = 0;
+      pop.play();
+    }catch(e){ /* ignore autoplay blocks */ }
+    // start music once
+    if(!musicStarted && open){
+      musicStarted = true;
+      music.play().catch(()=>{ /* blocked until user interacts, but we are inside click so should work */ });
+    }
+  }
+
+  // click the seal to toggle
+  seal.addEventListener('click', toggleOpen);
+  // also allow clicking the envelope area
+  envWrap.addEventListener('click', (ev)=>{
+    // avoid double-toggle when clicking seal (seal handles itself)
+    if(ev.target === seal) return;
+    toggleOpen();
+  });
+
+  // optional: scroll down closes the envelope
+  let lastScroll = 0;
+  window.addEventListener('scroll', ()=>{
+    const st = window.scrollY || window.pageYOffset;
+    if(st > lastScroll && st > 30){ // scrolling down
+      envWrap.classList.remove('open');
+      seal.setAttribute('aria-pressed','false');
+    }
+    lastScroll = st <= 0 ? 0 : st;
+  });
+
+  // floating hearts generator
+  function makeHeart(){
+    const h = document.createElement('div');
+    h.className = 'floating-heart';
+    h.innerText = '❤️';
+    h.style.left = (Math.random()*80 + 5) + 'vw';
+    h.style.fontSize = (Math.random()*22 + 12) + 'px';
+    document.body.appendChild(h);
+    setTimeout(()=> h.remove(), 7000);
+  }
+  // spawn a few to start, then interval
+  for(let i=0;i<6;i++) setTimeout(makeHeart, i*250);
+  setInterval(makeHeart, 900);
+
+  // accessibility: keyboard toggle via Enter/Space on seal
+  seal.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleOpen(); }
+  });
 </script>
 </body>
 </html>
