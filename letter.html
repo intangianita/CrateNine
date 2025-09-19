@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Love Letter</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #fff0f5;
+      font-family: "Cursive", sans-serif;
+      overflow: hidden;
+    }
+
+    /* Background hati */
+    .hearts {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: pink;
+      transform: rotate(45deg);
+      animation: floatUp 8s linear infinite;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: pink;
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      top: -10px;
+      left: 0;
+    }
+
+    .heart::after {
+      left: -10px;
+      top: 0;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) rotate(45deg); opacity: 1; }
+      100% { transform: translateY(-10vh) rotate(45deg); opacity: 0; }
+    }
+
+    /* Amplop */
+    .envelope {
+      position: relative;
+      width: 300px;
+      height: 200px;
+      background: #ff4d4d;
+      border-radius: 5px;
+      overflow: hidden;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    .envelope::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 150px solid transparent;
+      border-right: 150px solid transparent;
+      border-bottom: 100px solid #ff9999;
+    }
+
+    .letter {
+      position: absolute;
+      top: 100%; /* tersembunyi di bawah */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 250px;
+      height: 150px;
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-sizing: border-box;
+      text-align: center;
+      transition: top 1s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    /* saat amplop terbuka */
+    .envelope.open .letter {
+      top: 20px; /* keluar */
+    }
+  </style>
+</head>
+<body>
+
+<!-- Background hati -->
+<div class="hearts"></div>
+
+<!-- Amplop -->
+<div class="envelope" id="envelope">
+  <div class="letter">
+    <h3>To my better half,</h3>
+    <p>I love you! ❤️</p>
+  </div>
+</div>
+
+<!-- Audio efek pop -->
+<audio id="popSound" src="pop.mp3" preload="auto"></audio>
+
+<!-- Latar musik -->
+<audio id="bgMusic" src="music.mp3" loop></audio>
+
+<script>
+  // Generate hati random
+  const heartsContainer = document.querySelector('.hearts');
+  for (let i = 0; i < 20; i++) {
+    let heart = document.createElement('div');
+    heart.className = 'heart';
+    heart.style.left = Math.random() * 100 + 'vw';
+    heart.style.animationDuration = (5 + Math.random() * 5) + 's';
+    heart.style.opacity = Math.random();
+    heart.style.background = Math.random() > 0.5 ? 'pink' : 'hotpink';
+    heartsContainer.appendChild(heart);
+  }
+
+  // Toggle buka/tutup surat + bunyi pop
+  const envelope = document.getElementById('envelope');
+  const popSound = document.getElementById('popSound');
+  envelope.addEventListener('click', () => {
+    envelope.classList.toggle('open');
+    popSound.currentTime = 0;
+    popSound.play();
+  });
+
+  // Autoplay musik background (butuh interaksi user di beberapa browser)
+  const bgMusic = document.getElementById('bgMusic');
+  document.body.addEventListener('click', () => {
+    if (bgMusic.paused) {
+      bgMusic.play().catch(()=>{}); // mulai musik setelah klik pertama
+    }
+  }, { once: true });
+</script>
+
+</body>
+</html>
