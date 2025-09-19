@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Amplop Realistis Interaktif</title>
+<title>Amplop Interaktif</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
@@ -72,41 +72,33 @@ body {
   background:linear-gradient(145deg,#f8f9fa 0%,#e9ecef 100%);
   border-radius:4px;
   box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+  overflow:hidden;
 }
 
-.letter {
+/* letter content di dalam amplop */
+.letter-content {
   position:absolute;
-  width:280px; height:380px;
+  top:10px; left:10px; right:10px; bottom:10px;
   background:linear-gradient(145deg,#ffffff 0%,#fefefe 100%);
   border:1px solid #dee2e6; border-radius:6px;
-  left:50%; top:50%;
-  transform:translateX(-50%) translateY(200px); /* mulai di bawah */
-  opacity:1;
-  box-shadow:0 8px 32px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8);
-  z-index:5;
-  padding:25px;
-}
-
-/* Animasi pull-out */
-@keyframes pullOut {
-  from { transform: translateX(-50%) translateY(200px); }
-  to { transform: translateX(-50%) translateY(-80px); } /* keluarkan sebagian */
-}
-.letter.pulled-out { animation: pullOut 0.8s forwards cubic-bezier(0.25,0.46,0.45,0.94); }
-
-.letter-content {
+  padding:15px;
+  max-height:200px; /* hanya sebagian terlihat */
+  overflow-y:auto;
   opacity:0;
-  transition: opacity 0.6s ease 0.3s;
-  max-height:260px;      /* tinggi sebagian surat terlihat */
-  overflow-y:auto;       /* scroll jika lebih */
+  transition: opacity 0.6s ease, transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
+  transform: translateY(60px); /* posisi awal di bawah flap */
+  z-index:5;
 }
-.letter.content-visible .letter-content { opacity:1; }
+.letter-content.visible {
+  opacity:1;
+  transform: translateY(0);
+}
 
-.letter-header { text-align:center; margin-bottom:15px; padding-bottom:10px; border-bottom:2px solid #6c757d; }
-.letter-title { font-size:20px; font-weight:bold; color:#495057; margin-bottom:8px; }
+.letter-header { text-align:center; margin-bottom:10px; padding-bottom:5px; border-bottom:2px solid #6c757d; }
+.letter-title { font-size:18px; font-weight:bold; color:#495057; margin-bottom:6px; }
 .letter-date { font-size:12px; color:#6c757d; font-style:italic; }
-.letter-body { text-align:justify; margin-bottom:15px; }
-.letter-signature { text-align:right; margin-top:25px; font-style:italic; color:#495057; }
+.letter-body { text-align:justify; margin-bottom:10px; }
+.letter-signature { text-align:right; margin-top:20px; font-style:italic; color:#495057; }
 
 .stamp {
   position:absolute; top:15px; right:15px; width:50px; height:50px;
@@ -149,62 +141,54 @@ body {
 <div class="envelope-container" id="envelopeContainer">
   <div class="envelope" id="envelope">
     <div class="envelope-back"></div>
-    <div class="envelope-inner"></div>
+    <div class="envelope-inner">
+      <div class="letter-content" id="letterContent">
+        <div class="letter-header">
+          <div class="letter-title">Surat Istimewa</div>
+          <div class="letter-date">Jakarta, 15 Desember 2024</div>
+        </div>
+        <div class="letter-body">
+          <p><strong>Kepada yang terkasih,</strong></p>
+          <p>Selamat datang di amplop interaktif dengan desain realistis!</p>
+          <p>Klik amplop untuk membuka atau menutup, lalu scroll untuk membaca isi surat.</p>
+        </div>
+        <div class="letter-signature">Dengan penuh kreativitas,<br><strong>Canva Code</strong> ✨</div>
+      </div>
+    </div>
     <div class="envelope-flap"></div>
     <div class="stamp">📮 <br><span style="font-size:8px;">MAIL</span></div>
   </div>
-
-  <div class="letter" id="letter">
-    <div class="letter-content">
-      <div class="letter-header">
-        <div class="letter-title">Surat Istimewa</div>
-        <div class="letter-date">Jakarta, 15 Desember 2024</div>
-      </div>
-      <div class="letter-body">
-        <p><strong>Kepada yang terkasih,</strong></p>
-        <p>Selamat datang di amplop interaktif dengan desain realistis!</p>
-        <p>Klik amplop untuk membuka atau menutup, lalu scroll untuk membaca isi surat.</p>
-        <p>Scroll up untuk menampilkan bagian bawah surat, scroll down untuk menutup surat kembali.</p>
-      </div>
-      <div class="letter-signature">Dengan penuh kreativitas,<br><strong>Canva Code</strong> ✨</div>
-    </div>
-  </div>
 </div>
 
-<div class="scroll-indicator" id="scrollIndicator">🖱️ Gunakan scroll untuk mengontrol surat</div>
+<div class="scroll-indicator" id="scrollIndicator">🖱️ Gunakan scroll untuk membaca surat</div>
 <div class="instructions">Klik amplop untuk buka/tutup • Scroll ↑↓ untuk membaca surat</div>
 
 <script>
 const envelopeContainer = document.getElementById('envelopeContainer');
 const envelope = document.getElementById('envelope');
-const letter = document.getElementById('letter');
-const letterContent = letter.querySelector('.letter-content');
+const letterContent = document.getElementById('letterContent');
 const scrollIndicator = document.getElementById('scrollIndicator');
 const bgMusic = document.getElementById('bgMusic');
 const popSound = document.getElementById('popSound');
 
 let isOpened=false;
-let letterPosition=50;
 let bgStarted=false;
 
 function openEnvelope(){
   envelope.classList.add('opened');
-  letter.classList.remove('content-visible');
-  letter.classList.add('pulled-out');
-  setTimeout(()=>letter.classList.add('content-visible'),800);
-  setTimeout(()=>scrollIndicator.classList.add('visible'),1000);
+  letterContent.classList.remove('visible');
+  setTimeout(()=>letterContent.classList.add('visible'),200); // animasi masuk
+  setTimeout(()=>scrollIndicator.classList.add('visible'),500);
   try{ popSound.currentTime=0; popSound.play(); }catch(e){}
   if(!bgStarted){ bgStarted=true; bgMusic.play().catch(()=>{}); }
   isOpened=true;
 }
 
 function closeEnvelope(){
-  letter.classList.remove('content-visible');
+  letterContent.classList.remove('visible');
   scrollIndicator.classList.remove('visible');
-  letter.classList.remove('pulled-out');
   setTimeout(()=>{
     envelope.classList.remove('opened');
-    letterPosition=50;
     try{ popSound.currentTime=0; popSound.play(); }catch(e){}
   },400);
   isOpened=false;
@@ -215,25 +199,18 @@ envelopeContainer.addEventListener('click',()=>{
   else openEnvelope();
 });
 
-// scroll control
+// scroll isi surat
 let scrollTimeout;
-document.addEventListener('wheel', function(e){
+letterContent.addEventListener('wheel', function(e){
   if(!isOpened) return;
   e.preventDefault();
   clearTimeout(scrollTimeout);
   scrollIndicator.classList.add('visible');
   scrollTimeout = setTimeout(()=>scrollIndicator.classList.remove('visible'),1800);
 
-  const delta = e.deltaY;
   const maxScroll = letterContent.scrollHeight - letterContent.clientHeight;
-
-  // scroll isi surat
-  if(delta>0){ // scroll down
+  if(e.deltaY>0){ // scroll down
     letterContent.scrollTop = Math.min(letterContent.scrollTop + 20, maxScroll);
-    // jika sudah mencapai atas bawah = tutup surat
-    if(letterContent.scrollTop >= maxScroll){
-      closeEnvelope();
-    }
   } else { // scroll up
     letterContent.scrollTop = Math.max(letterContent.scrollTop - 20, 0);
   }
