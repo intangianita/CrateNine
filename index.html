@@ -1,259 +1,120 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Amplop Realistis Interaktif</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Surprise Envelope</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-
     body {
-      font-family: 'Georgia', serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-      min-height: 100vh;
+      margin: 0;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      background: pink;
       overflow: hidden;
-      padding: 20px;
+      font-family: sans-serif;
     }
 
     .envelope-container {
       position: relative;
+      width: 300px;
+      height: 220px;
       cursor: pointer;
-      transform-style: preserve-3d;
-      transition: transform 0.3s ease;
     }
-    .envelope-container:hover { transform: scale(1.02); }
 
+    /* Amplop */
     .envelope {
-      width: 320px; height: 220px;
-      background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-      border: 2px solid #e9ecef;
       position: relative;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8);
-      border-radius: 8px;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      border: 2px solid #e67e9c;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
       overflow: hidden;
     }
 
-    .envelope-back {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(145deg, #ffffff 0%, #f1f3f4 100%);
-      border-radius: 8px;
+    /* Segitiga tutup */
+    .flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 150px solid transparent;
+      border-right: 150px solid transparent;
+      border-bottom: 110px solid #e67e9c;
+      transform-origin: top;
+      transition: transform 0.8s ease;
+      z-index: 3;
     }
 
-    .envelope-flap {
-      position: absolute; top: -2px; left: -2px;
-      width: 324px; height: 140px;
-      background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-      border: 2px solid #e9ecef; border-bottom: none;
-      clip-path: polygon(0 0, 100% 0, 50% 85%);
-      transform-origin: 50% 0%;
-      transition: transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
-      z-index: 10;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8);
-    }
-    .envelope.opened .envelope-flap { transform: rotateX(-160deg); }
-
-    .envelope-inner {
-      position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px;
-      background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
-      border-radius: 4px;
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+    .envelope.open .flap {
+      transform: rotateX(180deg);
     }
 
+    /* Surat */
     .letter {
       position: absolute;
-      width: 280px; height: 380px;
-      background: linear-gradient(145deg, #ffffff 0%, #fefefe 100%);
-      border: 1px solid #dee2e6; border-radius: 6px;
-      left: 50%; top: 50%;
-      transform: translateX(-50%) translateY(200px);
-      transition: transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8);
-      z-index: 5;
-      padding: 25px;
-      opacity: 0;
-    }
-    .letter.pulled-out { transform: translateX(-50%) translateY(-180px); opacity: 1; }
-    .letter.content-visible .letter-content { opacity: 1; }
-
-    .letter-lines {
-      position: absolute; top: 80px; left: 25px; right: 25px; bottom: 25px;
-    }
-    .letter-line {
-      height: 1px;
-      background: linear-gradient(90deg, #e9ecef 0%, transparent 100%);
-      margin: 18px 0;
-      opacity: 0.6;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%) translateY(100%);
+      width: 90%;
+      height: 180px;
+      background: #fffbea;
+      border: 2px solid #f1c40f;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: transform 0.8s ease;
+      z-index: 2;
     }
 
-    .letter-content {
-      position: relative; z-index: 2; height: 100%; overflow-y: auto;
-      font-size: 14px; line-height: 1.8; color: #2c3e50;
-      opacity: 0; transition: opacity 0.6s ease 0.3s;
+    .letter.show {
+      transform: translateX(-50%) translateY(-120px);
     }
 
-    .letter-header { text-align: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #6c757d; }
-    .letter-title { font-size: 20px; font-weight: bold; color: #495057; margin-bottom: 8px; }
-    .letter-date { font-size: 12px; color: #6c757d; font-style: italic; }
-    .letter-body { text-align: justify; margin-bottom: 25px; }
-    .letter-signature { text-align: right; margin-top: 35px; font-style: italic; color: #495057; }
-
-    .stamp {
-      position: absolute; top: 15px; right: 15px;
-      width: 50px; height: 50px;
-      background: linear-gradient(145deg, #dc3545 0%, #c82333 100%);
-      border: 3px solid #fff; border-radius: 4px;
-      display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 12px; font-weight: bold;
-      box-shadow: 0 4px 12px rgba(220,53,69,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
-      z-index: 8;
-    }
-
-    .address-area { position: absolute; bottom: 40px; left: 20px; right: 80px; }
-    .address-line {
-      height: 2px;
-      background: linear-gradient(90deg, #adb5bd 0%, transparent 80%);
-      margin: 12px 0; border-radius: 1px; opacity: 0.7;
-    }
-
-    .instructions {
-      position: absolute; bottom: 30px; left: 50%;
-      transform: translateX(-50%);
-      color: #495057; text-align: center; font-size: 14px; opacity: 0.8;
-      background: rgba(255,255,255,0.9);
-      padding: 10px 20px; border-radius: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    .scroll-indicator {
-      position: absolute; top: 20px; left: 50%;
-      transform: translateX(-50%);
-      color: #495057; font-size: 13px; opacity: 0;
-      transition: opacity 0.3s ease;
-      background: rgba(255,255,255,0.95);
-      padding: 8px 16px; border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    .scroll-indicator.visible { opacity: 1; }
-
-    .envelope-shadow {
-      position: absolute; bottom: -10px; left: 10px; right: 10px; height: 20px;
-      background: radial-gradient(ellipse, rgba(0,0,0,0.2) 0%, transparent 70%);
-      border-radius: 50%; z-index: -1;
-    }
-
-    @media (max-width: 768px) {
-      .envelope { width: 280px; height: 190px; }
-      .letter { width: 250px; height: 340px; padding: 20px; }
-      .envelope-flap { width: 284px; }
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px) scale(0.9); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+    .letter p {
+      padding: 1em;
+      margin: 0;
+      font-size: 16px;
+      color: #333;
     }
   </style>
 </head>
 <body>
-  <div class="envelope-container" id="envelopeContainer">
-    <div class="envelope-shadow"></div>
-    <div class="envelope" id="envelope">
-      <div class="envelope-back"></div>
-      <div class="envelope-inner"></div>
-      <div class="envelope-flap"></div>
-
-      <div class="stamp">📮<br><span style="font-size:8px;">MAIL</span></div>
-
-      <div class="address-area">
-        <div class="address-line" style="width:85%;"></div>
-        <div class="address-line" style="width:65%;"></div>
-        <div class="address-line" style="width:75%;"></div>
-        <div class="address-line" style="width:45%;"></div>
-      </div>
-    </div>
-
-    <div class="letter" id="letter">
-      <div class="letter-lines">
-        <div class="letter-line"></div><div class="letter-line"></div><div class="letter-line"></div>
-        <div class="letter-line"></div><div class="letter-line"></div><div class="letter-line"></div>
-        <div class="letter-line"></div><div class="letter-line"></div><div class="letter-line"></div>
-        <div class="letter-line"></div><div class="letter-line"></div><div class="letter-line"></div>
-      </div>
-
-      <div class="letter-content">
-        <div class="letter-header">
-          <div class="letter-title">Surat Istimewa</div>
-          <div class="letter-date">Jakarta, 15 Desember 2024</div>
-        </div>
-
-        <div class="letter-body">
-          <p><strong>Kepada yang terkasih,</strong></p>
-          <p>Selamat datang di amplop interaktif dengan desain realistis!</p>
-          <p>Klik amplop untuk membuka, lalu scroll untuk mengontrol surat.</p>
-        </div>
-
-        <div class="letter-signature">
-          Dengan penuh kreativitas,<br><strong>Canva Code</strong> ✨
-        </div>
+  <div class="envelope-container">
+    <div class="envelope">
+      <div class="flap"></div>
+      <div class="letter">
+        <p>💌 Surprise! Ini isi suratnya. Kamu bisa taruh pesan apa saja di sini.</p>
       </div>
     </div>
   </div>
 
-  <div class="scroll-indicator" id="scrollIndicator">🖱️ Gunakan scroll untuk mengontrol surat</div>
-  <div class="instructions">Klik amplop untuk membuka • Scroll ↑↓ untuk mengontrol surat</div>
-
   <script>
-    const envelope = document.getElementById('envelope');
-    const letter = document.getElementById('letter');
-    const envelopeContainer = document.getElementById('envelopeContainer');
-    const scrollIndicator = document.getElementById('scrollIndicator');
+    const envelope = document.querySelector(".envelope");
+    const letter = document.querySelector(".letter");
 
-    let isOpened = false;
-    let letterPosition = 0;
+    let isOpen = false;
 
-    envelopeContainer.addEventListener('click', function() {
-      if (!isOpened) {
-        envelope.classList.add('opened');
-        letter.classList.add('pulled-out');
-        isOpened = true; letterPosition = 50;
-        setTimeout(()=>letter.classList.add('content-visible'),800);
-        setTimeout(()=>scrollIndicator.classList.add('visible'),1000);
+    // Klik untuk buka amplop
+    envelope.addEventListener("click", () => {
+      if (!isOpen) {
+        envelope.classList.add("open");
+        isOpen = true;
       }
     });
 
-    let scrollTimeout;
-    document.addEventListener('wheel', function(e) {
-      if (!isOpened) return;
-      e.preventDefault();
+    // Scroll untuk buka/tutup surat
+    window.addEventListener("wheel", (e) => {
+      if (!isOpen) return; // hanya jalan kalau amplop sudah kebuka
 
-      clearTimeout(scrollTimeout);
-      scrollIndicator.classList.add('visible');
-      scrollTimeout = setTimeout(()=>scrollIndicator.classList.remove('visible'),2000);
-
-      const delta = e.deltaY;
-      if (delta < 0) letterPosition = Math.min(letterPosition + 4, 100);
-      else letterPosition = Math.max(letterPosition - 4, 0);
-
-      const translateY = -180 - (letterPosition - 50) * 2.5;
-      letter.style.transform = `translateX(-50%) translateY(${translateY}px)`;
-
-      if (letterPosition <= 0) {
-        letter.classList.remove('content-visible');
-        setTimeout(() => {
-          envelope.classList.remove('opened');
-          letter.classList.remove('pulled-out');
-          letter.style.transform = 'translateX(-50%) translateY(200px)';
-          letter.style.opacity = '0';
-          isOpened = false; letterPosition = 0;
-          scrollIndicator.classList.remove('visible');
-        }, 300);
+      if (e.deltaY > 0) {
+        // scroll ke bawah → keluarkan surat
+        letter.classList.add("show");
+      } else if (e.deltaY < 0) {
+        // scroll ke atas → masukkan surat
+        letter.classList.remove("show");
       }
-    }, { passive: false });
-
-    window.addEventListener('load', () => {
-      envelopeContainer.style.animation = 'fadeInUp 1s ease-out';
     });
   </script>
 </body>
