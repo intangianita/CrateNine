@@ -81,16 +81,17 @@ body {
   background:linear-gradient(145deg,#ffffff 0%,#fefefe 100%);
   border:1px solid #dee2e6; border-radius:8px;
   left:50%; top:50%;
-  transform:translateX(-50%) translateY(50px); /* tersembunyi di dalam amplop */
-  opacity:1;
+  transform:translateX(-50%) translateY(120px); /* tersembunyi di bawah amplop */
+  opacity:0; /* muncul saat amplop dibuka */
   box-shadow:0 8px 32px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8);
   z-index:5;
   padding:25px;
   overflow:hidden;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.3s ease;
 }
 
 .letter-content { opacity:0; transition: opacity 0.6s ease 0.3s; }
+.letter.content-visible { opacity:1; }
 .letter.content-visible .letter-content { opacity:1; }
 
 .letter-header { text-align:center; margin-bottom:25px; padding-bottom:15px; border-bottom:2px solid #6c757d; }
@@ -157,8 +158,7 @@ body {
         <p><strong>Kepada yang terkasih,</strong></p>
         <p>Selamat datang di amplop interaktif dengan desain realistis!</p>
         <p>Klik amplop untuk membuka atau menutup, lalu scroll untuk mengontrol surat.</p>
-        <p>Ini adalah tambahan konten untuk menunjukkan efek scroll.</p>
-        <p>Bagian bawah surat bisa dilihat dengan scroll.</p>
+        <p>Scroll mengangkat surat di dalam amplop tanpa terlihat keluar sebelum amplop terbuka.</p>
       </div>
       <div class="letter-signature">Dengan penuh kreativitas,<br><strong>Canva Code</strong> ✨</div>
     </div>
@@ -166,7 +166,7 @@ body {
 </div>
 
 <div class="scroll-indicator" id="scrollIndicator">🖱️ Gunakan scroll untuk mengontrol surat</div>
-<div class="instructions">Klik amplop untuk buka/tutup • Scroll ↑↓ untuk mengangkat/menutup surat</div>
+<div class="instructions">Klik amplop untuk buka/tutup • Scroll ↑↓ untuk mengontrol surat</div>
 
 <script>
 const envelopeContainer = document.getElementById('envelopeContainer');
@@ -177,13 +177,14 @@ const bgMusic = document.getElementById('bgMusic');
 const popSound = document.getElementById('popSound');
 
 let isOpened = false;
-let letterOffset = 50; // posisi Y surat
-let maxOffset = -60;   // maksimal keluar
-let minOffset = 50;    // posisi di dalam amplop
+let letterOffset = 120; // tersembunyi
+let maxOffset = -60;    // maksimal surat naik di dalam amplop
+let minOffset = 120;    // posisi penuh di dalam amplop
 let bgStarted = false;
 
 function openEnvelope() {
   envelope.classList.add('opened');
+  letter.style.opacity = 1;
   letter.classList.add('content-visible');
   if(!bgStarted){ bgStarted=true; bgMusic.play().catch(()=>{}); }
   try{ popSound.currentTime=0; popSound.play(); } catch(e){}
@@ -195,13 +196,14 @@ function closeEnvelope() {
   letter.classList.remove('content-visible');
   letterOffset = minOffset;
   letter.style.transform = `translateX(-50%) translateY(${letterOffset}px)`;
+  letter.style.opacity = 0;
   try{ popSound.currentTime=0; popSound.play(); } catch(e){}
   isOpened=false;
 }
 
 envelopeContainer.addEventListener('click',()=>{ if(isOpened) closeEnvelope(); else openEnvelope(); });
 
-// scroll control: naik/turun surat
+// scroll control: naik/turun surat di dalam amplop
 let scrollTimeout;
 document.addEventListener('wheel',function(e){
   if(!isOpened) return;
@@ -211,7 +213,7 @@ document.addEventListener('wheel',function(e){
   scrollTimeout=setTimeout(()=>scrollIndicator.classList.remove('visible'),1800);
 
   const delta = e.deltaY;
-  if(delta < 0){ // scroll up, tarik surat keluar
+  if(delta < 0){ // scroll up, tarik surat
     letterOffset = Math.max(letterOffset - 10, maxOffset);
   } else {      // scroll down, masukkan surat
     letterOffset = Math.min(letterOffset + 10, minOffset);
@@ -219,9 +221,8 @@ document.addEventListener('wheel',function(e){
 
   letter.style.transform = `translateX(-50%) translateY(${letterOffset}px)`;
 
-  // tutup amplop otomatis jika surat kembali ke posisi awal
+  // tutup amplop otomatis jika surat kembali penuh
   if(letterOffset === minOffset) closeEnvelope();
-
 },{passive:false});
 
 // animasi masuk
