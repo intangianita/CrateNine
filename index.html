@@ -119,12 +119,22 @@ body {
   z-index:8;
 }
 
+.scroll-indicator {
+  position:absolute; top:20px; left:50%; transform:translateX(-50%);
+  color:#495057; font-size:13px; opacity:0;
+  transition:opacity 0.3s ease;
+  background:rgba(255,255,255,0.95); padding:8px 16px;
+  border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.1);
+  z-index:15;
+}
+.scroll-indicator.visible { opacity:1; }
+
 .instructions {
   position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
   color:#495057; font-size:14px; opacity:0.9;
   background:rgba(255,255,255,0.9); padding:10px 20px;
   border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,0.1);
-  z-index:15; /* pastikan di atas semua */
+  z-index:15; 
 }
 </style>
 </head>
@@ -156,25 +166,27 @@ body {
   </div>
 </div>
 
-<div class="instructions" id="instructions">Klik amplop untuk buka/tutup • Scroll untuk mengangkat surat</div>
+<div class="scroll-indicator" id="scrollIndicator">🖱️ Gunakan scroll untuk mengontrol surat</div>
+<div class="instructions">Klik amplop untuk buka/tutup • Scroll ↑↓ untuk mengontrol surat</div>
 
 <script>
 const envelopeContainer = document.getElementById('envelopeContainer');
 const envelope = document.getElementById('envelope');
 const letter = document.getElementById('letter');
-const instructions = document.getElementById('instructions');
+const scrollIndicator = document.getElementById('scrollIndicator');
 const bgMusic = document.getElementById('bgMusic');
 const popSound = document.getElementById('popSound');
 
 let isOpened = false;
 let letterOffset = 0;
 let bgStarted = false;
-const maxOffset = -150; // batas maksimal naik
+const maxOffset = -150; 
 
 function openEnvelope(){
   envelope.classList.add('opened');
   letter.classList.add('pop-up');
   setTimeout(()=>letter.classList.add('content-visible'),300);
+  scrollIndicator.classList.add('visible');
   try{ popSound.currentTime=0; popSound.play(); }catch(e){}
   if(!bgStarted){ bgStarted=true; bgMusic.play().catch(()=>{}); }
   isOpened = true;
@@ -185,6 +197,7 @@ function closeEnvelope(){
   letter.classList.remove('pop-up');
   letterOffset = 0;
   letter.style.transform = `translate(-50%, -50%)`;
+  scrollIndicator.classList.remove('visible');
   setTimeout(()=>{ envelope.classList.remove('opened'); try{ popSound.currentTime=0; popSound.play(); }catch(e){} },300);
   isOpened = false;
 }
@@ -198,6 +211,10 @@ envelopeContainer.addEventListener('click', ()=>{
 document.addEventListener('wheel', function(e){
   if(!isOpened) return;
   e.preventDefault();
+  scrollIndicator.classList.add('visible');
+  clearTimeout(window.scrollIndicatorTimeout);
+  window.scrollIndicatorTimeout = setTimeout(()=>scrollIndicator.classList.remove('visible'),1800);
+
   const delta = e.deltaY;
 
   letterOffset -= delta*0.3;
