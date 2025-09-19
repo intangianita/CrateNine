@@ -85,7 +85,7 @@ body {
   background:linear-gradient(145deg,#ffffff 0%,#fefefe 100%);
   border:1px solid #dee2e6; border-radius:8px;
   left:50%; top:50%;
-  transform:translateX(-50%) translateY(0); /* mulai di amplop */
+  transform:translateX(-50%) translateY(0); /* sejajar amplop */
   opacity:0;
   box-shadow:0 8px 32px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8);
   z-index:5;
@@ -97,13 +97,13 @@ body {
 .letter.pop-up { 
   transition: transform 0.5s ease, opacity 0.5s ease;
   opacity:1;
-  transform:translateX(-50%) translateY(-40px);
+  transform:translateX(-50%) translateY(-20px); /* sedikit keluar amplop */
 }
 
 .letter-content {
   opacity:0;
   height:100%;
-  overflow-y:hidden; /* scroll manual */
+  overflow-y:hidden; 
   transition: opacity 0.6s ease 0.3s;
 }
 .letter.content-visible .letter-content { opacity:1; }
@@ -177,7 +177,7 @@ const bgMusic=document.getElementById('bgMusic');
 const popSound=document.getElementById('popSound');
 
 let isOpened=false;
-let letterOffset=0; // offset untuk geser surat
+let letterOffset=0; 
 let bgStarted=false;
 
 function openEnvelope(){
@@ -193,11 +193,11 @@ function closeEnvelope(){
   letter.classList.remove('content-visible');
   letter.classList.remove('pop-up');
   letterOffset=0;
+  letter.style.transform=`translateX(-50%) translateY(0)`; // kembali sejajar amplop
   setTimeout(()=>{ envelope.classList.remove('opened'); try{ popSound.currentTime=0; popSound.play(); }catch(e){} },300);
   isOpened=false;
 }
 
-// click amplop
 envelopeContainer.addEventListener('click',()=>{ if(isOpened) closeEnvelope(); else openEnvelope(); });
 
 // scroll efek geser surat
@@ -205,9 +205,9 @@ document.addEventListener('wheel',function(e){
   if(!isOpened) return;
   e.preventDefault();
   const delta=e.deltaY;
-  letterOffset-=delta*0.3; // geser sedikit
-  letterOffset=Math.max(-150, Math.min(0, letterOffset)); // batas atas dan bawah
-  letter.style.transform=`translateX(-50%) translateY(${ -40 + letterOffset }px)`;
+  letterOffset-=delta*0.3; 
+  letterOffset=Math.max(-150, Math.min(0, letterOffset)); 
+  letter.style.transform=`translateX(-50%) translateY(${-20 + letterOffset}px)`;
 },{passive:false});
 
 // animasi masuk
