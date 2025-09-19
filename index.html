@@ -121,10 +121,10 @@ body {
 
 .instructions {
   position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
-  color:#495057; font-size:14px; opacity:0.8;
+  color:#495057; font-size:14px; opacity:0.9;
   background:rgba(255,255,255,0.9); padding:10px 20px;
   border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,0.1);
-  z-index:10;
+  z-index:15; /* pastikan di atas semua */
 }
 </style>
 </head>
@@ -156,18 +156,20 @@ body {
   </div>
 </div>
 
-<div class="instructions">Klik amplop untuk buka/tutup • Scroll untuk mengangkat surat</div>
+<div class="instructions" id="instructions">Klik amplop untuk buka/tutup • Scroll untuk mengangkat surat</div>
 
 <script>
 const envelopeContainer = document.getElementById('envelopeContainer');
 const envelope = document.getElementById('envelope');
 const letter = document.getElementById('letter');
+const instructions = document.getElementById('instructions');
 const bgMusic = document.getElementById('bgMusic');
 const popSound = document.getElementById('popSound');
 
 let isOpened = false;
 let letterOffset = 0;
 let bgStarted = false;
+const maxOffset = -150; // batas maksimal naik
 
 function openEnvelope(){
   envelope.classList.add('opened');
@@ -199,11 +201,11 @@ document.addEventListener('wheel', function(e){
   const delta = e.deltaY;
 
   letterOffset -= delta*0.3;
-  letterOffset = Math.max(-150, Math.min(0, letterOffset));
+  letterOffset = Math.max(maxOffset, Math.min(0, letterOffset));
   letter.style.transform = `translate(-50%, calc(-50% + ${letterOffset}px))`;
 
-  // jika surat kembali ke posisi awal dan scroll turun, tutup amplop otomatis
-  if(letterOffset === 0 && delta > 0){
+  // jika surat kembali ke posisi awal (0) scroll turun, tutup amplop otomatis
+  if(letterOffset >= -1 && delta > 0){
     closeEnvelope();
   }
 },{passive:false});
