@@ -22,7 +22,6 @@
     .heart {
       position: absolute;
       color: rgba(255, 0, 100, 0.6);
-      font-size: 20px;
       animation: floatUp 6s linear forwards;
       user-select: none;
       pointer-events: none;
@@ -170,40 +169,67 @@
   </div>
 
   <div class="scroll-indicator" id="scrollIndicator">🖱️ Gunakan scroll untuk mengontrol surat</div>
-  <div class="instructions">Klik amplop untuk membuka • Scroll ↑↓ untuk mengontrol surat</div>
+  <div class="instructions">Klik amplop untuk membuka/menutup • Scroll ↑↓ untuk mengontrol surat</div>
 
   <script>
+    const envelopeContainer = document.getElementById('envelopeContainer');
     const envelope = document.getElementById('envelope');
     const letter = document.getElementById('letter');
-    const envelopeContainer = document.getElementById('envelopeContainer');
     const scrollIndicator = document.getElementById('scrollIndicator');
     const bgMusic = document.getElementById('bgMusic');
     const popSound = document.getElementById('popSound');
 
     let isOpened = false;
-    let letterPosition = 50;
+    let letterPosition = 50; // middle start
+    let bgStarted = false;
 
-    envelopeContainer.addEventListener('click', function() {
+    // Toggle open/close on click (repeats)
+    envelopeContainer.addEventListener('click', function () {
       if (!isOpened) {
+        // open
         envelope.classList.add('opened');
         letter.classList.add('pulled-out');
-        isOpened = true;
         setTimeout(() => letter.classList.add('content-visible'), 800);
         setTimeout(() => scrollIndicator.classList.add('visible'), 1000);
 
-        // mainkan musik + efek pop
-        bgMusic.play().catch(()=>{});
-        popSound.play().catch(()=>{});
+        try { popSound.currentTime = 0; popSound.play(); } catch(e){}
+        if (!bgStarted) {
+          bgStarted = true;
+          bgMusic.play().catch(()=>{}); // play once on first open
+        }
+        isOpened = true;
+      } else {
+        // close (smooth)
+        letter.classList.remove('content-visible');
+        scrollIndicator.classList.remove('visible');
+
+        // remove pulled-out so CSS animates it down
+        letter.classList.remove('pulled-out');
+
+        // small delay then close flap
+        setTimeout(() => {
+          envelope.classList.remove('opened');
+          try { popSound.currentTime = 0; popSound.play(); } catch(e){}
+          // reset transform/opacity after animation ends
+          setTimeout(() => {
+            letter.style.transform = 'translateX(-50%) translateY(200px)';
+            letter.style.opacity = '0';
+            letterPosition = 50;
+          }, 350);
+          isOpened = false;
+        }, 300);
       }
     });
 
+    // Scroll controls letter position while opened
     let scrollTimeout;
-    document.addEventListener('wheel', function(e) {
+    document.addEventListener('wheel', function (e) {
       if (!isOpened) return;
       e.preventDefault();
+
       clearTimeout(scrollTimeout);
       scrollIndicator.classList.add('visible');
-      scrollTimeout = setTimeout(() => scrollIndicator.classList.remove('visible'), 2000);
+      scrollTimeout = setTimeout(() => scrollIndicator.classList.remove('visible'), 1800);
 
       const delta = e.deltaY;
       if (delta < 0) letterPosition = Math.min(letterPosition + 4, 100);
@@ -212,6 +238,7 @@
       const translateY = -180 - (letterPosition - 50) * 2.5;
       letter.style.transform = `translateX(-50%) translateY(${translateY}px)`;
 
+      // if fully pushed in, auto-close
       if (letterPosition <= 0) {
         letter.classList.remove('content-visible');
         setTimeout(() => {
@@ -226,21 +253,21 @@
       }
     }, { passive: false });
 
-    // animasi masuk
+    // entry animation
     window.addEventListener('load', () => {
       envelopeContainer.style.animation = 'fadeInUp 1s ease-out';
     });
 
-    // bikin hati background
+    // hearts background
     function createHeart() {
-      const heart = document.createElement("div");
-      heart.classList.add("heart");
-      heart.innerText = "❤️";
-      heart.style.left = Math.random() * window.innerWidth + "px";
-      heart.style.top = window.innerHeight + "px";
-      heart.style.fontSize = 15 + Math.random() * 25 + "px";
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.innerText = '❤️';
+      heart.style.left = Math.random() * (window.innerWidth - 40) + 'px';
+      heart.style.top = window.innerHeight + 'px';
+      heart.style.fontSize = (12 + Math.random() * 28) + 'px';
       document.body.appendChild(heart);
-      setTimeout(()=>heart.remove(), 6000);
+      setTimeout(() => heart.remove(), 7000);
     }
     setInterval(createHeart, 600);
   </script>
