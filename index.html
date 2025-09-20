@@ -18,8 +18,18 @@ body {
 }
 
 /* floating hearts */
-.heart { position:absolute; color:rgba(255,0,100,0.6); font-size:20px; animation: floatUp 6s linear forwards; user-select:none; pointer-events:none; z-index:1; }
-@keyframes floatUp { 0% { transform:translateY(0) scale(1); opacity:1; } 100% { transform:translateY(-800px) scale(1.5); opacity:0; } }
+.heart { 
+  position:absolute; 
+  color:rgba(255,0,100,0.6); 
+  font-size:20px; 
+  animation: floatUp 6s linear forwards; 
+  user-select:none; pointer-events:none; 
+  z-index:1; 
+}
+@keyframes floatUp { 
+  0% { transform:translateY(0) scale(1); opacity:1; } 
+  100% { transform:translateY(-800px) scale(1.5); opacity:0; } 
+}
 
 /* Amplop */
 .envelope-container { position:relative; cursor:pointer; width:400px; transform-style:preserve-3d; z-index:10; }
@@ -33,6 +43,7 @@ body {
 .letter {
   position:absolute;
   width:92%;
+  max-height:90%;
   background:linear-gradient(145deg,#ffffff 0%,#fefefe 100%);
   border:1px solid #dee2e6;
   border-radius:8px;
@@ -44,6 +55,7 @@ body {
   z-index:5;
   padding:20px;
   transition: transform 0.3s ease, opacity 0.3s ease;
+  overflow:hidden;
 }
 .letter.pop-up { opacity:1; }
 
@@ -56,7 +68,12 @@ body {
 .letter-header { text-align:center; margin-bottom:20px; border-bottom:2px solid #6c757d; }
 .letter-title { font-size:22px; font-weight:bold; color:#495057; margin-bottom:6px; }
 .letter-date { font-size:12px; color:#6c757d; font-style:italic; }
-.letter-body { text-align:justify; margin-bottom:15px; white-space: pre-line; } /* <-- newline ditampilkan */
+.letter-body { 
+  text-align:justify; 
+  margin-bottom:15px; 
+  white-space: pre-wrap; /* penting supaya newline muncul */
+  line-height:1.6;
+}
 .letter-signature { text-align:right; margin-top:25px; font-style:italic; color:#495057; }
 
 .stamp { position:absolute; top:15px; right:15px; width:60px; height:60px; background:linear-gradient(145deg,#dc3545 0%,#c82333 100%); border:3px solid #fff; border-radius:6px; display:flex; align-items:center; justify-content:center; color:white; font-size:14px; font-weight:bold; box-shadow:0 4px 12px rgba(220,53,69,0.3), inset 0 1px 0 rgba(255,255,255,0.2); z-index:8; }
@@ -92,15 +109,14 @@ Akankah kita tetap dipersatukan oleh takdir Allah SWT.
 
 Di bulan ke 9 dan 9 bulan sudah kita berhubungan, hingga saat ini sudah menjadi tunangan.
 Aku sangat bersyukur dan berterima kasih kepada Allah yang telah memilihkan dirimu untuk menjadi teman hidupku.
-Aku merasa 12 bulan lamanya menuju hari pernikahan sangatlah lama, dan benar saja begitu banyak ujian yang aku rasakan dalam hubungan ini.
 
 Terkadang aku senang, tertawa jika bisa bertemu dan berbincang hal seru denganmu.
 Terkadang aku terlelap dalam kesedihan, karena pertengkaran kecil yang sebetulnya mungkin tidak perlu terlalu dipikirkan dan diperdebatkan.
 Namun namanya hidup memang isinya adalah ujian, dan aku yakin bersamamu nanti kita bisa lalui bersama.
 
-_Aku ingin kamu menjadi langit yang selalu menerima aku sebagai senja, menerima apa adanya. Yang kadang hitam kelam, kadang merah merekah._
+<em>Aku ingin kamu menjadi langit yang selalu menerima aku sebagai senja, menerima apa adanya. Yang kadang hitam kelam, kadang merah merekah.</em>
 
-**"Mau diulang 1000x pun, aku tetap mantep milih kamu"**
+<strong>"Mau diulang 1000x pun, aku tetap mantep milih kamu"</strong>
 
 Aku pernah berpikir, apakah akan berbeda jika aku bisa memulai hubungan ini lebih awal, bagaimana rasanya.
 Tapi aku yakin dimana waktu kita dipisahkan, kita sama-sama berjuang dan memperbaiki diri demi masa depan yang kita impikan.
@@ -130,6 +146,7 @@ let isOpened=false;
 let letterOffset=0;
 let bgStarted=false;
 
+// buka amplop
 function openEnvelope() {
   envelope.classList.add('opened');
   letter.classList.add('pop-up');
@@ -139,6 +156,7 @@ function openEnvelope() {
   isOpened=true;
 }
 
+// tutup amplop
 function closeEnvelope() {
   letter.classList.remove('content-visible');
   letter.classList.remove('pop-up');
@@ -151,6 +169,7 @@ function closeEnvelope() {
 
 envelopeContainer.addEventListener('click',()=>{ if(isOpened) closeEnvelope(); else openEnvelope(); });
 
+// scroll untuk mengangkat atau menurunkan surat
 let scrollTimeout;
 document.addEventListener('wheel', function(e){
   if(!isOpened) return;
@@ -163,7 +182,7 @@ document.addEventListener('wheel', function(e){
   letterOffset -= delta*0.3;
 
   const letterHeight = letter.offsetHeight;
-  const maxOffset = letterHeight; // scroll bisa sampai seluruh tinggi surat
+  const maxOffset = letterHeight/2;
   letterOffset = Math.min(0, Math.max(-maxOffset, letterOffset));
 
   letter.style.transform = `translate(-50%, calc(-50% + ${letterOffset}px))`;
@@ -173,6 +192,7 @@ document.addEventListener('wheel', function(e){
   }
 },{passive:false});
 
+// floating hearts
 function createHeart() {
   const heart=document.createElement('div');
   heart.className='heart';
@@ -187,3 +207,4 @@ setInterval(createHeart,600);
 </script>
 </body>
 </html>
+s
