@@ -33,7 +33,7 @@ body {
 .letter {
   position:absolute;
   width:92%;
-  height:0px; /* mulai dari 0 */
+  height:0;
   background:linear-gradient(145deg,#ffffff 0%,#fefefe 100%);
   border:1px solid #dee2e6;
   border-radius:8px;
@@ -47,16 +47,19 @@ body {
   overflow:hidden;
   transition: height 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
 }
+
 .letter.pop-up { opacity:1; }
-.letter-content { opacity:0; transition: opacity 0.6s ease 0.3s; }
+
+.letter-content {
+  opacity:0;
+  transition: opacity 0.6s ease 0.3s;
+}
 .letter.content-visible .letter-content { opacity:1; }
 
 .letter-header { text-align:center; margin-bottom:20px; border-bottom:2px solid #6c757d; }
 .letter-title { font-size:22px; font-weight:bold; color:#495057; margin-bottom:6px; }
 .letter-date { font-size:12px; color:#6c757d; font-style:italic; }
-.letter-body { text-align:justify; white-space:pre-line; } /* penting agar newline muncul */
-.letter-body em { font-style:italic; }
-.letter-body strong { font-weight:bold; }
+.letter-body { text-align:justify; white-space:pre-wrap; }
 .letter-signature { text-align:right; margin-top:25px; font-style:italic; color:#495057; }
 
 .stamp { position:absolute; top:15px; right:15px; width:60px; height:60px; background:linear-gradient(145deg,#dc3545 0%,#c82333 100%); border:3px solid #fff; border-radius:6px; display:flex; align-items:center; justify-content:center; color:white; font-size:14px; font-weight:bold; box-shadow:0 4px 12px rgba(220,53,69,0.3), inset 0 1px 0 rgba(255,255,255,0.2); z-index:8; }
@@ -96,9 +99,9 @@ Terkadang aku senang, tertawa jika bisa bertemu dan berbincang hal seru denganmu
 Terkadang aku terlelap dalam kesedihan, karena pertengkaran kecil yang sebetulnya mungkin tidak perlu terlalu dipikirkan dan diperdebatkan.
 Namun namanya hidup memang isinya adalah ujian, dan aku yakin bersamamu nanti kita bisa lalui bersama.
 
-*Aku ingin kamu menjadi langit yang selalu menerima aku sebagai senja, menerima apa adanya. Yang kadang hitam kelam, kadang merah merekah.*
+<em>Aku ingin kamu menjadi langit yang selalu menerima aku sebagai senja, menerima apa adanya. Yang kadang hitam kelam, kadang merah merekah.</em>
 
-**"Mau diulang 1000x pun, aku tetap mantep milih kamu"**
+<strong>"Mau diulang 1000x pun, aku tetap mantep milih kamu"</strong>
 
 Aku pernah berpikir, apakah akan berbeda jika aku bisa memulai hubungan ini lebih awal, bagaimana rasanya.
 Tapi aku yakin dimana waktu kita dipisahkan, kita sama-sama berjuang dan memperbaiki diri demi masa depan yang kita impikan.
@@ -130,13 +133,6 @@ let letterHeight=0;
 let maxLetterHeight=0;
 let bgStarted=false;
 
-// parsing *italic* dan **bold**
-function parseText(text){
-  return text
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>');
-}
-
 // buka amplop
 function openEnvelope() {
   envelope.classList.add('opened');
@@ -146,12 +142,9 @@ function openEnvelope() {
   if(!bgStarted){ bgStarted=true; bgMusic.play().catch(()=>{}); }
   isOpened=true;
 
-  // ubah text ke HTML
-  letterBody.innerHTML = parseText(letterBody.textContent);
-
-  // hitung tinggi maksimal surat
-  maxLetterHeight = letterBody.scrollHeight + 40; // + padding
-  letterHeight = 0;
+  // hitung tinggi maksimal surat berdasarkan konten
+  maxLetterHeight = letterBody.scrollHeight + 40; // padding
+  letterHeight = 50; // mulai dari sedikit terlihat
   letter.style.height = `${letterHeight}px`;
 }
 
@@ -178,10 +171,11 @@ document.addEventListener('wheel', function(e){
   scrollTimeout=setTimeout(()=>scrollIndicator.classList.remove('visible'),1800);
 
   const delta = e.deltaY;
-  letterHeight -= delta * 0.5;
+  letterHeight -= delta * 0.7; // scroll speed
   letterHeight = Math.max(0, Math.min(maxLetterHeight, letterHeight));
   letter.style.height = `${letterHeight}px`;
 
+  // otomatis tutup jika surat kembali ke dalam amplop
   if(letterHeight <= 0) {
     closeEnvelope();
   }
