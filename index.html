@@ -33,7 +33,7 @@ body {
 .letter {
   position:absolute;
   width:94%;
-  height:0px; /* mulai dari 0 */
+  height:0px;
   background:linear-gradient(145deg,#ffffff 0%,#fefefe 100%);
   border:1px solid #dee2e6;
   border-radius:8px;
@@ -50,16 +50,13 @@ body {
 
 .letter.pop-up { opacity:1; }
 
-.letter-content {
-  opacity:0;
-  transition: opacity 0.6s ease 0.3s;
-}
+.letter-content { opacity:0; transition: opacity 0.6s ease 0.3s; }
 .letter.content-visible .letter-content { opacity:1; }
 
 .letter-header { text-align:center; margin-bottom:20px; border-bottom:2px solid #6c757d; }
 .letter-title { font-size:22px; font-weight:bold; color:#495057; margin-bottom:6px; }
 .letter-date { font-size:12px; color:#6c757d; font-style:italic; }
-.letter-body { text-align:justify; white-space:pre-wrap; } /* pre-wrap agar newline dan spasi muncul */
+.letter-body { text-align:justify; white-space:pre-line; font-size:16px; line-height:1.5; }
 .letter-signature { text-align:right; margin-top:25px; font-style:italic; color:#495057; }
 
 .stamp { position:absolute; top:15px; right:15px; width:60px; height:60px; background:linear-gradient(145deg,#dc3545 0%,#c82333 100%); border:3px solid #fff; border-radius:6px; display:flex; align-items:center; justify-content:center; color:white; font-size:14px; font-weight:bold; box-shadow:0 4px 12px rgba(220,53,69,0.3), inset 0 1px 0 rgba(255,255,255,0.2); z-index:8; }
@@ -99,9 +96,9 @@ Terkadang aku senang, tertawa jika bisa bertemu dan berbincang hal seru denganmu
 Terkadang aku terlelap dalam kesedihan, karena pertengkaran kecil yang sebetulnya mungkin tidak perlu terlalu dipikirkan dan diperdebatkan.
 Namun namanya hidup memang isinya adalah ujian, dan aku yakin bersamamu nanti kita bisa lalui bersama.
 
-<i>Aku ingin kamu menjadi langit yang selalu menerima aku sebagai senja, menerima apa adanya. Yang kadang hitam kelam, kadang merah merekah.</i>
+<em>Aku ingin kamu menjadi langit yang selalu menerima aku sebagai senja, menerima apa adanya. Yang kadang hitam kelam, kadang merah merekah.</em>
 
-<b>"Mau diulang 1000x pun, aku tetap mantep milih kamu"</b>
+<strong>"Mau diulang 1000x pun, aku tetap mantep milih kamu"</strong>
 
 Aku pernah berpikir, apakah akan berbeda jika aku bisa memulai hubungan ini lebih awal, bagaimana rasanya.
 Tapi aku yakin dimana waktu kita dipisahkan, kita sama-sama berjuang dan memperbaiki diri demi masa depan yang kita impikan.
@@ -110,9 +107,8 @@ Aku ingin bisa menjadi teman hidup sesurgamu, mencari ridho Allah dalam setiap l
 Semoga suka dengan hadiah kecil yang aku beri.
 Ingatlah setiap pemberian yang aku beri itu tanda sayang dan tidak berharap imbalan (jadi tidak perlu membalas, cukup terima dengan segenap hati).
 Semoga juga hubungan kita dengan Allah selalu dan makin dekat, sehingga hubungan kitapun tetap bisa erat dan bertahan sampai maut memisahkan. Aamiin.
-
-<div class="letter-signature">Tertanda,<br><b>Soremu</b> ✨</div>
       </div>
+      <div class="letter-signature">Tertanda,<br><strong>Soremu</strong> ✨</div>
     </div>
   </div>
 </div>
@@ -143,8 +139,8 @@ function openEnvelope() {
   if(!bgStarted){ bgStarted=true; bgMusic.play().catch(()=>{}); }
   isOpened=true;
 
-  // hitung tinggi maksimal surat berdasarkan konten
-  maxLetterHeight = letterBody.scrollHeight + 40; // padding
+  // hitung tinggi maksimal surat termasuk signature
+  maxLetterHeight = letter.scrollHeight;
   letterHeight = 0;
   letter.style.height = `${letterHeight}px`;
 }
@@ -160,7 +156,6 @@ function closeEnvelope() {
   isOpened=false;
 }
 
-// klik amplop
 envelopeContainer.addEventListener('click',()=>{ if(isOpened) closeEnvelope(); else openEnvelope(); });
 
 // scroll untuk mengangkat/menurunkan surat
