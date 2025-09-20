@@ -51,9 +51,23 @@ body {
 .letter-content { opacity:0; transition: opacity 0.6s ease 0.3s; }
 .letter.content-visible .letter-content { opacity:1; }
 
-.letter-header { text-align:center; margin-bottom:20px; border-bottom:2px solid #6c757d; }
-.letter-title { font-size:22px; font-weight:bold; color:#495057; margin-bottom:6px; }
-.letter-date { font-size:12px; color:#6c757d; font-style:italic; }
+.letter-header {
+  text-align: center;
+  margin-bottom: 10px; /* lebih rapat */
+  border-bottom: 1px solid #6c757d; /* tipis saja */
+}
+.letter-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #495057;
+  margin-bottom: 4px; /* jarak title & date lebih rapat */
+}
+.letter-date {
+  font-size: 12px;
+  color: #6c757d;
+  font-style: italic;
+  margin-bottom: 0; /* pastikan date menempel ke border bawah */
+}
 .letter-body { text-align:justify; white-space:pre-line; font-size:16px; line-height:1.5; }
 .letter-signature { text-align:right; margin-top:25px; font-style:italic; color:#495057; }
 
