@@ -33,7 +33,7 @@ body {
 .letter {
   position:absolute;
   width:92%;
-  height:0px; /* mulai dari 0 */
+  height:0px;
   background:linear-gradient(145deg,#ffffff 0%,#fefefe 100%);
   border:1px solid #dee2e6;
   border-radius:8px;
@@ -47,13 +47,8 @@ body {
   overflow:hidden;
   transition: height 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
 }
-
 .letter.pop-up { opacity:1; }
-
-.letter-content {
-  opacity:0;
-  transition: opacity 0.6s ease 0.3s;
-}
+.letter-content { opacity:0; transition: opacity 0.6s ease 0.3s; }
 .letter.content-visible .letter-content { opacity:1; }
 
 .letter-header { text-align:center; margin-bottom:20px; border-bottom:2px solid #6c757d; }
@@ -64,44 +59,11 @@ body {
 
 .stamp { position:absolute; top:15px; right:15px; width:60px; height:60px; background:linear-gradient(145deg,#dc3545 0%,#c82333 100%); border:3px solid #fff; border-radius:6px; display:flex; align-items:center; justify-content:center; color:white; font-size:14px; font-weight:bold; box-shadow:0 4px 12px rgba(220,53,69,0.3), inset 0 1px 0 rgba(255,255,255,0.2); z-index:8; }
 
-/* indikator scroll */
-.scroll-indicator { 
-  position:absolute; 
-  top:20px; 
-  left:50%; 
-  transform:translateX(-50%); 
-  color:#495057; 
-  font-size:13px; 
-  opacity:0; 
-  transition:opacity 0.3s ease; 
-  background:rgba(255,255,255,0.95); 
-  padding:8px 16px; 
-  border-radius:15px; 
-  box-shadow:0 4px 12px rgba(0,0,0,0.1); 
-  z-index:10; 
-}
+.scroll-indicator { position:absolute; top:20px; left:50%; transform:translateX(-50%); color:#495057; font-size:13px; opacity:0; transition:opacity 0.3s ease; background:rgba(255,255,255,0.95); padding:8px 16px; border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:10; }
 .scroll-indicator.visible { opacity:1; }
 
-/* instruction mirip scroll-indicator */
-.instructions { 
-  position:absolute; 
-  bottom:20px; 
-  left:50%; 
-  transform:translateX(-50%); 
-  color:#495057; 
-  font-size:13px;      /* sama seperti scroll-indicator */
-  opacity:0;           /* mulai hidden */
-  transition:opacity 0.3s ease; 
-  background:rgba(255,255,255,0.95); /* lebih mirip scroll-indicator */
-  padding:8px 16px;    /* padding sama */
-  border-radius:15px;  /* border-radius sama */
-  box-shadow:0 4px 12px rgba(0,0,0,0.1); 
-  z-index:10; 
-}
-
-/* class untuk menampilkan instruction */
+.instructions { position:absolute; bottom:20px; left:50%; transform:translateX(-50%); color:#495057; font-size:14px; opacity:0; background:rgba(255,255,255,0.9); padding:10px 20px; border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:10; transition: opacity 0.3s ease; }
 .instructions.visible { opacity:1; }
-
 </style>
 </head>
 <body>
@@ -147,6 +109,7 @@ const envelope = document.getElementById('envelope');
 const letter = document.getElementById('letter');
 const letterBody = document.getElementById('letterBody');
 const scrollIndicator = document.getElementById('scrollIndicator');
+const instructions = document.querySelector('.instructions');
 const bgMusic = document.getElementById('bgMusic');
 const popSound = document.getElementById('popSound');
 
@@ -177,6 +140,7 @@ function closeEnvelope() {
   letterHeight=0;
   letter.style.height=`0px`;
   scrollIndicator.classList.remove('visible');
+  instructions.classList.remove('visible');
   setTimeout(()=>{ envelope.classList.remove('opened'); try{ popSound.currentTime=0; popSound.play(); }catch(e){} },300);
   isOpened=false;
 }
@@ -185,6 +149,14 @@ envelopeContainer.addEventListener('click',()=>{ if(isOpened) closeEnvelope(); e
 
 // scroll untuk mengangkat/menurunkan surat
 let scrollTimeout;
+let instructionTimeout;
+
+function showInstructions() {
+  instructions.classList.add('visible');
+  clearTimeout(instructionTimeout);
+  instructionTimeout = setTimeout(()=>instructions.classList.remove('visible'),1800);
+}
+
 document.addEventListener('wheel', function(e){
   if(!isOpened) return;
   e.preventDefault();
@@ -192,6 +164,8 @@ document.addEventListener('wheel', function(e){
   scrollIndicator.classList.add('visible');
   clearTimeout(scrollTimeout);
   scrollTimeout = setTimeout(()=>scrollIndicator.classList.remove('visible'),1800);
+
+  showInstructions();
 
   const delta = e.deltaY;
   letterHeight -= delta * 0.5;
