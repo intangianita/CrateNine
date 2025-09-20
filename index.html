@@ -32,7 +32,7 @@ body {
 /* Surat */
 .letter {
   position:absolute;
-  width:94%;
+  width:90%;
   height:0px; /* mulai dari 0 */
   background:linear-gradient(145deg,#ffffff 0%,#fefefe 100%);
   border:1px solid #dee2e6;
@@ -50,17 +50,13 @@ body {
 
 .letter.pop-up { opacity:1; }
 
-.letter-content {
-  opacity:0;
-  transition: opacity 0.6s ease 0.3s;
-}
+.letter-content { opacity:0; transition: opacity 0.6s ease 0.3s; }
 .letter.content-visible .letter-content { opacity:1; }
 
 .letter-header { text-align:center; margin-bottom:20px; border-bottom:2px solid #6c757d; }
 .letter-title { font-size:22px; font-weight:bold; color:#495057; margin-bottom:6px; }
 .letter-date { font-size:12px; color:#6c757d; font-style:italic; }
-.letter-body { text-align:justify; white-space:pre-line; line-height:1.6; }
-.letter-body div { margin-bottom:10px; }
+.letter-body { text-align:justify; white-space: pre-wrap; } /* pre-wrap menjaga newline */
 .letter-signature { text-align:right; margin-top:25px; font-style:italic; color:#495057; }
 
 .stamp { position:absolute; top:15px; right:15px; width:60px; height:60px; background:linear-gradient(145deg,#dc3545 0%,#c82333 100%); border:3px solid #fff; border-radius:6px; display:flex; align-items:center; justify-content:center; color:white; font-size:14px; font-weight:bold; box-shadow:0 4px 12px rgba(220,53,69,0.3), inset 0 1px 0 rgba(255,255,255,0.2); z-index:8; }
@@ -90,24 +86,30 @@ body {
         <div class="letter-date">Purwakarta, 20 September 2025</div>
       </div>
       <div class="letter-body" id="letterBody">
-        <div>9 bulan tidak terasa waktu bergulir.</div>
-        <div>Tak terbayangkan jika waktu itu aku tidak menghubungimu.</div>
-        <div>Akankah kita tetap dipersatukan oleh takdir Allah SWT.</div>
-        <div>Di bulan ke 9 dan 9 bulan sudah kita berhubungan, hingga saat ini sudah menjadi tunangan.</div>
-        <div>Aku sangat bersyukur dan berterima kasih kepada Allah yang telah memilihkan dirimu untuk menjadi teman hidupku.</div>
-        <div>Aku merasa 12 bulan lamanya menuju hari pernikahan sangatlah lama, dan benar saja begitu banyak ujian yang aku rasakan dalam hubungan ini.</div>
-        <div>Terkadang aku senang, tertawa jika bisa bertemu dan berbincang hal seru denganmu.</div>
-        <div>Terkadang aku terlelap dalam kesedihan, karena pertengkaran kecil yang sebetulnya mungkin tidak perlu terlalu dipikirkan dan diperdebatkan.</div>
-        <div>Namun namanya hidup memang isinya adalah ujian, dan aku yakin bersamamu nanti kita bisa lalui bersama.</div>
-        <div><em>Aku ingin kamu menjadi langit yang selalu menerima aku sebagai senja, menerima apa adanya. Yang kadang hitam kelam, kadang merah merekah.</em></div>
-        <div><strong>"Mau diulang 1000x pun, aku tetap mantep milih kamu"</strong></div>
-        <div>Aku pernah berpikir, apakah akan berbeda jika aku bisa memulai hubungan ini lebih awal, bagaimana rasanya.</div>
-        <div>Tapi aku yakin dimana waktu kita dipisahkan, kita sama-sama berjuang dan memperbaiki diri demi masa depan yang kita impikan.</div>
-        <div>Aku ingin bisa menjadi teman hidup sesurgamu, mencari ridho Allah dalam setiap langkah yang kita tempuh. Aamiin.</div>
-        <div>Semoga suka dengan hadiah kecil yang aku beri.</div>
-        <div>Ingatlah setiap pemberian yang aku beri itu tanda sayang dan tidak berharap imbalan (jadi tidak perlu membalas, cukup terima dengan segenap hati).</div>
-        <div>Semoga juga hubungan kita dengan Allah selalu dan makin dekat, sehingga hubungan kitapun tetap bisa erat dan bertahan sampai maut memisahkan. Aamiin.</div>
-        <div class="letter-signature">Tertanda,<br><strong>Soremu</strong> ✨</div>
+9 bulan tidak terasa waktu bergulir.
+Tak terbayangkan jika waktu itu aku tidak menghubungimu.
+Akankah kita tetap dipersatukan oleh takdir Allah SWT.
+Di bulan ke 9 dan 9 bulan sudah kita berhubungan, hingga saat ini sudah menjadi tunangan.
+Aku sangat bersyukur dan berterima kasih kepada Allah yang telah memilihkan dirimu untuk menjadi teman hidupku.
+Aku merasa 12 bulan lamanya menuju hari pernikahan sangatlah lama, dan benar saja begitu banyak ujian yang aku rasakan dalam hubungan ini.
+Terkadang aku senang, tertawa jika bisa bertemu dan berbincang hal seru denganmu.
+Terkadang aku terlelap dalam kesedihan, karena pertengkaran kecil yang sebetulnya mungkin tidak perlu terlalu dipikirkan dan diperdebatkan.
+Namun namanya hidup memang isinya adalah ujian, dan aku yakin bersamamu nanti kita bisa lalui bersama.
+
+<em>Aku ingin kamu menjadi langit yang selalu menerima aku sebagai senja, menerima apa adanya. Yang kadang hitam kelam, kadang merah merekah.</em>
+
+<strong>"Mau diulang 1000x pun, aku tetap mantep milih kamu"</strong>
+
+Aku pernah berpikir, apakah akan berbeda jika aku bisa memulai hubungan ini lebih awal, bagaimana rasanya.
+Tapi aku yakin dimana waktu kita dipisahkan, kita sama-sama berjuang dan memperbaiki diri demi masa depan yang kita impikan.
+Aku ingin bisa menjadi teman hidup sesurgamu, mencari ridho Allah dalam setiap langkah yang kita tempuh. Aamiin.
+
+Semoga suka dengan hadiah kecil yang aku beri.
+Ingatlah setiap pemberian yang aku beri itu tanda sayang dan tidak berharap imbalan (jadi tidak perlu membalas, cukup terima dengan segenap hati).
+Semoga juga hubungan kita dengan Allah selalu dan makin dekat, sehingga hubungan kitapun tetap bisa erat dan bertahan sampai maut memisahkan. Aamiin.
+
+<strong>Tertanda,
+Soremu ✨</strong>
       </div>
     </div>
   </div>
