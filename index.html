@@ -8,9 +8,8 @@
 * { margin:0; padding:0; box-sizing:border-box; }
 body {
   font-family:'Georgia', serif;
-  /* background: linear-gradient(135deg,#f5f7fa 0%,#c3cfe2 100%); */
   background: url('image.png') no-repeat center center;
-  background-size: cover; /* biar menutupi seluruh layar */
+  background-size: cover;
   min-height:100vh;
   display:flex;
   justify-content:center;
@@ -30,15 +29,13 @@ body {
 .envelope-flap { position:absolute; top:-2px; left:-2px; width:454px; height:180px; background:linear-gradient(145deg,#ffffff 0%,#f8f9fa 100%); border:2px solid #e9ecef; border-bottom:none; clip-path:polygon(0 0,100% 0,50% 85%); transform-origin:50% 0%; transition: transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94); z-index:10; box-shadow:0 4px 16px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8); }
 .envelope.opened .envelope-flap { transform: rotateX(-160deg); }
 .envelope-inner { position:absolute; top:8px; left:8px; right:8px; bottom:8px; background:linear-gradient(145deg,#f8f9fa 0%,#e9ecef 100%); border-radius:6px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.1); }
-.envelope.opened .stamp {
-  display: none;
-}
+.envelope.opened .stamp { display: none; }
 
 /* Surat */
 .letter {
   position:absolute;
   width:92%;
-  height:0px; /* mulai dari 0 */
+  height:0px;
   background:linear-gradient(145deg,#ffffff 0%,#fefefe 100%);
   border:1px solid #dee2e6;
   border-radius:8px;
@@ -56,30 +53,16 @@ body {
 .letter-content { opacity:0; transition: opacity 0.6s ease 0.3s; }
 .letter.content-visible .letter-content { opacity:1; }
 
-.letter-header {
-  text-align: center;
-  margin-bottom: 0px; /* lebih rapat */
-  border-bottom: 1px solid #6c757d; /* tipis saja */
-}
-.letter-title {
-  font-size: 22px;
-  font-weight: bold;
-  color: #495057;
-  margin-bottom: 5px; /* jarak title & date lebih rapat */
-}
-.letter-date {
-  font-size: 12px;
-  color: #6c757d;
-  font-style: italic;
-  margin-bottom: 0; /* pastikan date menempel ke border bawah */
-}
+.letter-header { text-align: center; margin-bottom: 0px; border-bottom: 1px solid #6c757d; }
+.letter-title { font-size: 22px; font-weight: bold; color: #495057; margin-bottom: 5px; }
+.letter-date { font-size: 12px; color: #6c757d; font-style: italic; margin-bottom: 0; }
 .letter-body { text-align:justify; white-space:pre-line; font-size:14px; line-height:1.5; }
 .letter-signature { text-align:right; margin-top:9px; font-style:italic; color:#495057; }
 
 .stamp {
   position: absolute;
-  bottom: 15px;    /* ubah dari top ke bottom */
-  right: 15px;     /* tetap di kanan */
+  bottom: 15px;
+  right: 15px;
   width: 60px;
   height: 60px;
   background: linear-gradient(145deg,#dc3545 0%,#c82333 100%);
@@ -218,6 +201,31 @@ document.addEventListener('wheel', function(e) {
 
   if(letterHeight <= 0) closeEnvelope();
 }, { passive:false });
+
+// --- TOUCH SUPPORT UNTUK HP ---
+let touchStartY = 0;
+
+document.addEventListener('touchstart', function(e){
+  if(!isOpened) return;
+  touchStartY = e.touches[0].clientY;
+}, {passive:false});
+
+document.addEventListener('touchmove', function(e){
+  if(!isOpened) return;
+  e.preventDefault();
+  const touchY = e.touches[0].clientY;
+  const delta = touchStartY - touchY;
+  letterHeight += delta * 0.5;
+  letterHeight = Math.max(0, Math.min(maxLetterHeight, letterHeight));
+  letter.style.height = `${letterHeight}px`;
+
+  showScrollIndicator();
+  showInstructions();
+
+  touchStartY = touchY;
+
+  if(letterHeight <= 0) closeEnvelope();
+}, {passive:false});
 
 // floating hearts
 function createHeart() {
