@@ -83,6 +83,19 @@ body {
 
 .instructions { position:absolute; bottom:20px; left:50%; transform:translateX(-50%); color:#495057; font-size:14px; opacity:0; background:rgba(255,255,255,0.9); padding:10px 20px; border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:10; }
 .instructions.visible { opacity:1; }
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  .envelope-container { width: 90%; }
+  .envelope { height: 250px; }
+  .envelope-flap { width: 102%; height: 120px; }
+  .letter { width: 95%; padding: 15px; font-size: 13px; }
+  .letter-title { font-size: 18px; }
+  .letter-date { font-size: 11px; }
+  .letter-body { line-height: 1.4; }
+  .stamp { width: 50px; height: 50px; font-size: 12px; }
+  .scroll-indicator, .instructions { font-size: 12px; padding: 6px 12px; }
+}
 </style>
 </head>
 <body>
@@ -138,7 +151,6 @@ let bgStarted = false;
 let scrollTimeout;
 let instructionTimeout;
 
-// buka amplop
 function openEnvelope() {
   envelope.classList.add('opened');
   letter.classList.add('pop-up');
@@ -155,7 +167,6 @@ function openEnvelope() {
   showInstructions();
 }
 
-// tutup amplop
 function closeEnvelope() {
   letter.classList.remove('content-visible');
   letter.classList.remove('pop-up');
@@ -167,14 +178,12 @@ function closeEnvelope() {
   isOpened = false;
 }
 
-// tampilkan scroll-indicator
 function showScrollIndicator() {
   scrollIndicator.classList.add('visible');
   clearTimeout(scrollTimeout);
   scrollTimeout = setTimeout(() => scrollIndicator.classList.remove('visible'), 1800);
 }
 
-// tampilkan instructions
 function showInstructions() {
   instructions.classList.add('visible');
   clearTimeout(instructionTimeout);
@@ -186,46 +195,35 @@ envelopeContainer.addEventListener('click', () => {
   else openEnvelope();
 });
 
-// scroll untuk mengangkat/menurunkan surat
+// scroll untuk desktop
 document.addEventListener('wheel', function(e) {
   if(!isOpened) return;
   e.preventDefault();
-
   showScrollIndicator();
   showInstructions();
-
   const delta = e.deltaY;
   letterHeight -= delta * 0.5;
   letterHeight = Math.max(0, Math.min(maxLetterHeight, letterHeight));
   letter.style.height = `${letterHeight}px`;
-
   if(letterHeight <= 0) closeEnvelope();
 }, { passive:false });
 
-// --- TOUCH SUPPORT UNTUK HP ---
+// swipe untuk mobile
 let touchStartY = 0;
-
-document.addEventListener('touchstart', function(e){
-  if(!isOpened) return;
-  touchStartY = e.touches[0].clientY;
-}, {passive:false});
-
-document.addEventListener('touchmove', function(e){
+document.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive:false });
+document.addEventListener('touchmove', e => {
   if(!isOpened) return;
   e.preventDefault();
   const touchY = e.touches[0].clientY;
   const delta = touchStartY - touchY;
-  letterHeight += delta * 0.5;
+  letterHeight += delta * 0.8; // sesuaikan kecepatan swipe
   letterHeight = Math.max(0, Math.min(maxLetterHeight, letterHeight));
   letter.style.height = `${letterHeight}px`;
-
+  touchStartY = touchY;
   showScrollIndicator();
   showInstructions();
-
-  touchStartY = touchY;
-
   if(letterHeight <= 0) closeEnvelope();
-}, {passive:false});
+}, { passive:false });
 
 // floating hearts
 function createHeart() {
