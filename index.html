@@ -33,7 +33,7 @@ body {
 .letter {
   position:absolute;
   width:92%;
-  height:0;
+  height:0px; /* mulai dari 0 */
   background:linear-gradient(145deg,#ffffff 0%,#fefefe 100%);
   border:1px solid #dee2e6;
   border-radius:8px;
@@ -47,7 +47,6 @@ body {
   overflow:hidden;
   transition: height 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
 }
-
 .letter.pop-up { opacity:1; }
 
 .letter-content {
@@ -59,7 +58,7 @@ body {
 .letter-header { text-align:center; margin-bottom:20px; border-bottom:2px solid #6c757d; }
 .letter-title { font-size:22px; font-weight:bold; color:#495057; margin-bottom:6px; }
 .letter-date { font-size:12px; color:#6c757d; font-style:italic; }
-.letter-body { text-align:justify; white-space:pre-wrap; }
+.letter-body { text-align:justify; white-space:pre-line; } /* penting agar newline muncul */
 .letter-signature { text-align:right; margin-top:25px; font-style:italic; color:#495057; }
 
 .stamp { position:absolute; top:15px; right:15px; width:60px; height:60px; background:linear-gradient(145deg,#dc3545 0%,#c82333 100%); border:3px solid #fff; border-radius:6px; display:flex; align-items:center; justify-content:center; color:white; font-size:14px; font-weight:bold; box-shadow:0 4px 12px rgba(220,53,69,0.3), inset 0 1px 0 rgba(255,255,255,0.2); z-index:8; }
@@ -83,7 +82,7 @@ body {
   </div>
 
   <div class="letter" id="letter">
-    <div class="letter-content">
+    <div class="letter-content" id="letterContent">
       <div class="letter-header">
         <div class="letter-title">Surat Istimewa</div>
         <div class="letter-date">Purwakarta, 20 September 2025</div>
@@ -99,9 +98,9 @@ Terkadang aku senang, tertawa jika bisa bertemu dan berbincang hal seru denganmu
 Terkadang aku terlelap dalam kesedihan, karena pertengkaran kecil yang sebetulnya mungkin tidak perlu terlalu dipikirkan dan diperdebatkan.
 Namun namanya hidup memang isinya adalah ujian, dan aku yakin bersamamu nanti kita bisa lalui bersama.
 
-<em>Aku ingin kamu menjadi langit yang selalu menerima aku sebagai senja, menerima apa adanya. Yang kadang hitam kelam, kadang merah merekah.</em>
+*Aku ingin kamu menjadi langit yang selalu menerima aku sebagai senja, menerima apa adanya. Yang kadang hitam kelam, kadang merah merekah.*
 
-<strong>"Mau diulang 1000x pun, aku tetap mantep milih kamu"</strong>
+**"Mau diulang 1000x pun, aku tetap mantep milih kamu"**
 
 Aku pernah berpikir, apakah akan berbeda jika aku bisa memulai hubungan ini lebih awal, bagaimana rasanya.
 Tapi aku yakin dimana waktu kita dipisahkan, kita sama-sama berjuang dan memperbaiki diri demi masa depan yang kita impikan.
@@ -123,7 +122,7 @@ Semoga juga hubungan kita dengan Allah selalu dan makin dekat, sehingga hubungan
 const envelopeContainer = document.getElementById('envelopeContainer');
 const envelope = document.getElementById('envelope');
 const letter = document.getElementById('letter');
-const letterBody = document.getElementById('letterBody');
+const letterContent = document.getElementById('letterContent');
 const scrollIndicator = document.getElementById('scrollIndicator');
 const bgMusic = document.getElementById('bgMusic');
 const popSound = document.getElementById('popSound');
@@ -132,6 +131,16 @@ let isOpened=false;
 let letterHeight=0;
 let maxLetterHeight=0;
 let bgStarted=false;
+
+// konversi *italic* dan **bold** menjadi HTML
+function parseMarkdown(text){
+  return text
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g,'<em>$1</em>');
+}
+
+// tampilkan hasil parse
+letterContent.querySelector('#letterBody').innerHTML = parseMarkdown(letterContent.querySelector('#letterBody').textContent);
 
 // buka amplop
 function openEnvelope() {
@@ -142,9 +151,9 @@ function openEnvelope() {
   if(!bgStarted){ bgStarted=true; bgMusic.play().catch(()=>{}); }
   isOpened=true;
 
-  // hitung tinggi maksimal surat berdasarkan konten
-  maxLetterHeight = letterBody.scrollHeight + 40; // padding
-  letterHeight = 50; // mulai dari sedikit terlihat
+  // hitung tinggi maksimal surat berdasarkan scrollHeight seluruh konten
+  maxLetterHeight = letterContent.scrollHeight;
+  letterHeight = 50; // mulai sedikit terlihat
   letter.style.height = `${letterHeight}px`;
 }
 
@@ -159,6 +168,7 @@ function closeEnvelope() {
   isOpened=false;
 }
 
+// klik amplop
 envelopeContainer.addEventListener('click',()=>{ if(isOpened) closeEnvelope(); else openEnvelope(); });
 
 // scroll untuk mengangkat/menurunkan surat
@@ -171,11 +181,10 @@ document.addEventListener('wheel', function(e){
   scrollTimeout=setTimeout(()=>scrollIndicator.classList.remove('visible'),1800);
 
   const delta = e.deltaY;
-  letterHeight -= delta * 0.7; // scroll speed
+  letterHeight -= delta * 0.7;
   letterHeight = Math.max(0, Math.min(maxLetterHeight, letterHeight));
   letter.style.height = `${letterHeight}px`;
 
-  // otomatis tutup jika surat kembali ke dalam amplop
   if(letterHeight <= 0) {
     closeEnvelope();
   }
