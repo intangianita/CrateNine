@@ -59,7 +59,24 @@ body {
 .letter-body { text-align:justify; white-space:pre-line; font-size:14px; line-height:1.5; }
 .letter-signature { text-align:right; margin-top:9px; font-style:italic; color:#495057; }
 
-.stamp { position: absolute; bottom: 15px; right: 15px; width: 60px; height: 60px; background: linear-gradient(145deg,#dc3545 0%,#c82333 100%); border: 3px solid #fff; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: bold; box-shadow: 0 4px 12px rgba(220,53,69,0.3), inset 0 1px 0 rgba(255,255,255,0.2); z-index: 8; }
+.stamp {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(145deg,#dc3545 0%,#c82333 100%);
+  border: 3px solid #fff;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(220,53,69,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+  z-index: 8;
+}
 
 .scroll-indicator { position:absolute; top:20px; left:50%; transform:translateX(-50%); color:#495057; font-size:13px; opacity:0; transition:opacity 0.3s ease; background:rgba(255,255,255,0.95); padding:8px 16px; border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:10; }
 .scroll-indicator.visible { opacity:1; }
@@ -67,13 +84,12 @@ body {
 .instructions { position:absolute; bottom:20px; left:50%; transform:translateX(-50%); color:#495057; font-size:14px; opacity:0; background:rgba(255,255,255,0.9); padding:10px 20px; border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:10; }
 .instructions.visible { opacity:1; }
 
-/* CSS khusus mobile untuk font lebih kecil agar muat seluruh surat */
-@media only screen and (max-width: 480px) {
-  .letter-body { font-size:12px; line-height:1.4; }
-  .letter-title { font-size:20px; }
-  .letter-date { font-size:11px; }
-  .letter-signature { font-size:12px; }
-  .letter { padding:15px; }
+/* Hanya ubah font di mobile, tanpa ubah amplop atau surat */
+@media (max-width: 768px) {
+  .letter-title { font-size: 18px; }
+  .letter-date { font-size: 11px; }
+  .letter-body { font-size: 13px; line-height: 1.4; }
+  .letter-signature { font-size: 12px; }
 }
 </style>
 </head>
@@ -112,7 +128,7 @@ Aku pernah membayangkan bagaimana jika kita memulai lebih awal, tapi justru jara
 </div>
 
 <div class="scroll-indicator" id="scrollIndicator">🖱️ Gunakan scroll untuk mengontrol surat</div>
-<div class="instructions">Klik amplop untuk buka/tutup • Scroll ↑↓ / swipe untuk mengontrol surat</div>
+<div class="instructions">Klik amplop untuk buka/tutup • Scroll ↑↓ untuk mengontrol surat</div>
 
 <script>
 const envelopeContainer = document.getElementById('envelopeContainer');
@@ -178,38 +194,40 @@ envelopeContainer.addEventListener('click', () => {
   else openEnvelope();
 });
 
-// scroll desktop
+// scroll untuk mengangkat/menurunkan surat
 document.addEventListener('wheel', function(e) {
   if(!isOpened) return;
   e.preventDefault();
+
   showScrollIndicator();
   showInstructions();
+
   const delta = e.deltaY;
   letterHeight -= delta * 0.5;
   letterHeight = Math.max(0, Math.min(maxLetterHeight, letterHeight));
   letter.style.height = `${letterHeight}px`;
+
   if(letterHeight <= 0) closeEnvelope();
 }, { passive:false });
 
-// touch events untuk mobile
-let touchStartY = 0;
-document.addEventListener('touchstart', e => {
+// touch untuk swipe di HP
+let startY = null;
+letter.addEventListener('touchstart', function(e) {
   if(!isOpened) return;
-  touchStartY = e.touches[0].clientY;
-}, { passive:false });
-document.addEventListener('touchmove', e => {
-  if(!isOpened) return;
-  e.preventDefault();
-  const touchY = e.touches[0].clientY;
-  const delta = touchY - touchStartY;
-  touchStartY = touchY;
-  letterHeight -= delta * 1; // swipe sensitivity
+  startY = e.touches[0].clientY;
+}, { passive:true });
+letter.addEventListener('touchmove', function(e) {
+  if(!isOpened || startY===null) return;
+  let delta = startY - e.touches[0].clientY;
+  letterHeight += delta * 0.5;
   letterHeight = Math.max(0, Math.min(maxLetterHeight, letterHeight));
   letter.style.height = `${letterHeight}px`;
+  startY = e.touches[0].clientY;
+
   showScrollIndicator();
   showInstructions();
-  if(letterHeight <= 0) closeEnvelope();
 }, { passive:false });
+letter.addEventListener('touchend', function(e) { startY = null; });
 
 // floating hearts
 function createHeart() {
