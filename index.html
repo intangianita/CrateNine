@@ -17,25 +17,34 @@ body {
   padding:20px;
 }
 
-/* floating hearts */
-.heart { 
-  position:absolute; 
-  color:rgba(255,0,100,0.6); 
-  font-size:20px; 
-  animation: floatUp 6s linear forwards; 
-  user-select:none; pointer-events:none; 
-  z-index:1; 
+/* Hati floating */
+.heart {
+  position:absolute;
+  color:rgba(255,0,100,0.6);
+  font-size:20px;
+  animation: floatUp 6s linear forwards;
+  user-select:none; pointer-events:none;
+  z-index:1;
 }
-@keyframes floatUp { 
-  0% { transform:translateY(0) scale(1); opacity:1; } 
-  100% { transform:translateY(-800px) scale(1.5); opacity:0; } 
+@keyframes floatUp {
+  0% { transform:translateY(0) scale(1); opacity:1; }
+  100% { transform:translateY(-800px) scale(1.5); opacity:0; }
 }
 
 /* Amplop */
 .envelope-container { position:relative; cursor:pointer; width:400px; transform-style:preserve-3d; z-index:10; }
 .envelope { width:100%; height:300px; background:linear-gradient(145deg,#ffffff 0%,#f8f9fa 100%); border:2px solid #e9ecef; position:relative; box-shadow:0 8px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8); border-radius:12px; overflow:hidden; }
 .envelope-back { position:absolute; top:0; left:0; width:100%; height:100%; background:linear-gradient(145deg,#ffffff 0%,#f1f3f4 100%); border-radius:12px; }
-.envelope-flap { position:absolute; top:-2px; left:-2px; width:404px; height:160px; background:linear-gradient(145deg,#ffffff 0%,#f8f9fa 100%); border:2px solid #e9ecef; border-bottom:none; clip-path:polygon(0 0,100% 0,50% 85%); transform-origin:50% 0%; transition: transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94); z-index:10; box-shadow:0 4px 16px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8); }
+.envelope-flap {
+  position:absolute; top:-2px; left:-2px; width:404px; height:160px;
+  background:linear-gradient(145deg,#ffffff 0%,#f8f9fa 100%);
+  border:2px solid #e9ecef; border-bottom:none;
+  clip-path:polygon(0 0,100% 0,50% 85%);
+  transform-origin:50% 0%;
+  transition: transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
+  z-index:10;
+  box-shadow:0 4px 16px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8);
+}
 .envelope.opened .envelope-flap { transform: rotateX(-160deg); }
 .envelope-inner { position:absolute; top:8px; left:8px; right:8px; bottom:8px; background:linear-gradient(145deg,#f8f9fa 0%,#e9ecef 100%); border-radius:6px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.1); }
 
@@ -43,7 +52,7 @@ body {
 .letter {
   position:absolute;
   width:92%;
-  max-height:90%;
+  height:80%; /* tinggi awal terbatas di amplop */
   background:linear-gradient(145deg,#ffffff 0%,#fefefe 100%);
   border:1px solid #dee2e6;
   border-radius:8px;
@@ -54,13 +63,13 @@ body {
   box-shadow:0 8px 32px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8);
   z-index:5;
   padding:20px;
+  overflow:hidden; /* agar hanya sebagian isi terlihat */
   transition: transform 0.3s ease, opacity 0.3s ease;
-  overflow:hidden;
 }
 .letter.pop-up { opacity:1; }
-
 .letter-content {
-  opacity:0;
+  height:auto;
+  overflow:visible; /* konten tetap bisa lebih panjang dari amplop */
   transition: opacity 0.6s ease 0.3s;
 }
 .letter.content-visible .letter-content { opacity:1; }
@@ -68,19 +77,21 @@ body {
 .letter-header { text-align:center; margin-bottom:20px; border-bottom:2px solid #6c757d; }
 .letter-title { font-size:22px; font-weight:bold; color:#495057; margin-bottom:6px; }
 .letter-date { font-size:12px; color:#6c757d; font-style:italic; }
-.letter-body { 
-  text-align:justify; 
-  margin-bottom:15px; 
-  white-space: pre-wrap; /* penting supaya newline muncul */
-  line-height:1.6;
-}
+.letter-body { text-align:justify; margin-bottom:15px; white-space:pre-line; } /* jaga newline */
 .letter-signature { text-align:right; margin-top:25px; font-style:italic; color:#495057; }
 
-.stamp { position:absolute; top:15px; right:15px; width:60px; height:60px; background:linear-gradient(145deg,#dc3545 0%,#c82333 100%); border:3px solid #fff; border-radius:6px; display:flex; align-items:center; justify-content:center; color:white; font-size:14px; font-weight:bold; box-shadow:0 4px 12px rgba(220,53,69,0.3), inset 0 1px 0 rgba(255,255,255,0.2); z-index:8; }
+.stamp {
+  position:absolute; top:15px; right:15px; width:60px; height:60px;
+  background:linear-gradient(145deg,#dc3545 0%,#c82333 100%);
+  border:3px solid #fff; border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  color:white; font-size:14px; font-weight:bold;
+  box-shadow:0 4px 12px rgba(220,53,69,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+  z-index:8;
+}
 
 .scroll-indicator { position:absolute; top:20px; left:50%; transform:translateX(-50%); color:#495057; font-size:13px; opacity:0; transition:opacity 0.3s ease; background:rgba(255,255,255,0.95); padding:8px 16px; border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:10; }
 .scroll-indicator.visible { opacity:1; }
-
 .instructions { position:absolute; bottom:20px; left:50%; transform:translateX(-50%); color:#495057; font-size:14px; opacity:0.8; background:rgba(255,255,255,0.9); padding:10px 20px; border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:10; }
 </style>
 </head>
@@ -106,17 +117,16 @@ body {
 9 bulan tidak terasa waktu bergulir.
 Tak terbayangkan jika waktu itu aku tidak menghubungimu.
 Akankah kita tetap dipersatukan oleh takdir Allah SWT.
-
 Di bulan ke 9 dan 9 bulan sudah kita berhubungan, hingga saat ini sudah menjadi tunangan.
 Aku sangat bersyukur dan berterima kasih kepada Allah yang telah memilihkan dirimu untuk menjadi teman hidupku.
-
+Aku merasa 12 bulan lamanya menuju hari pernikahan sangatlah lama, dan benar saja begitu banyak ujian yang aku rasakan dalam hubungan ini.
 Terkadang aku senang, tertawa jika bisa bertemu dan berbincang hal seru denganmu.
 Terkadang aku terlelap dalam kesedihan, karena pertengkaran kecil yang sebetulnya mungkin tidak perlu terlalu dipikirkan dan diperdebatkan.
 Namun namanya hidup memang isinya adalah ujian, dan aku yakin bersamamu nanti kita bisa lalui bersama.
 
-<em>Aku ingin kamu menjadi langit yang selalu menerima aku sebagai senja, menerima apa adanya. Yang kadang hitam kelam, kadang merah merekah.</em>
+*Aku ingin kamu menjadi langit yang selalu menerima aku sebagai senja, menerima apa adanya. Yang kadang hitam kelam, kadang merah merekah.*
 
-<strong>"Mau diulang 1000x pun, aku tetap mantep milih kamu"</strong>
+>"Mau diulang 1000x pun, aku tetap mantep milih kamu"
 
 Aku pernah berpikir, apakah akan berbeda jika aku bisa memulai hubungan ini lebih awal, bagaimana rasanya.
 Tapi aku yakin dimana waktu kita dipisahkan, kita sama-sama berjuang dan memperbaiki diri demi masa depan yang kita impikan.
@@ -169,7 +179,7 @@ function closeEnvelope() {
 
 envelopeContainer.addEventListener('click',()=>{ if(isOpened) closeEnvelope(); else openEnvelope(); });
 
-// scroll untuk mengangkat atau menurunkan surat
+// scroll untuk mengangkat/menurunkan surat
 let scrollTimeout;
 document.addEventListener('wheel', function(e){
   if(!isOpened) return;
@@ -179,17 +189,15 @@ document.addEventListener('wheel', function(e){
   scrollTimeout=setTimeout(()=>scrollIndicator.classList.remove('visible'),1800);
 
   const delta = e.deltaY;
-  letterOffset -= delta*0.3;
+  letterOffset -= delta*0.5;
 
-  const letterHeight = letter.offsetHeight;
-  const maxOffset = letterHeight/2;
+  const letterHeight = letter.scrollHeight;
+  const maxOffset = letterHeight - letter.offsetHeight;
   letterOffset = Math.min(0, Math.max(-maxOffset, letterOffset));
 
   letter.style.transform = `translate(-50%, calc(-50% + ${letterOffset}px))`;
 
-  if(letterOffset >= 0) {
-    closeEnvelope();
-  }
+  if(letterOffset >= 0) closeEnvelope();
 },{passive:false});
 
 // floating hearts
@@ -207,4 +215,3 @@ setInterval(createHeart,600);
 </script>
 </body>
 </html>
-s
