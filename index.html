@@ -33,7 +33,7 @@ body {
 .letter {
   position:absolute;
   width:92%;
-  height:0px;
+  height:0px; /* mulai dari 0 */
   background:linear-gradient(145deg,#ffffff 0%,#fefefe 100%);
   border:1px solid #dee2e6;
   border-radius:8px;
@@ -47,19 +47,14 @@ body {
   overflow:hidden;
   transition: height 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
 }
-
 .letter.pop-up { opacity:1; }
-
-.letter-content {
-  opacity:0;
-  transition: opacity 0.6s ease 0.3s;
-}
+.letter-content { opacity:0; transition: opacity 0.6s ease 0.3s; }
 .letter.content-visible .letter-content { opacity:1; }
 
 .letter-header { text-align:center; margin-bottom:20px; border-bottom:2px solid #6c757d; }
 .letter-title { font-size:22px; font-weight:bold; color:#495057; margin-bottom:6px; }
 .letter-date { font-size:12px; color:#6c757d; font-style:italic; }
-.letter-body { text-align:justify; white-space:pre-line; } /* tampilkan newline */
+.letter-body { text-align:justify; white-space:pre-line; } /* penting agar newline muncul */
 .letter-body em { font-style:italic; }
 .letter-body strong { font-weight:bold; }
 .letter-signature { text-align:right; margin-top:25px; font-style:italic; color:#495057; }
@@ -135,11 +130,11 @@ let letterHeight=0;
 let maxLetterHeight=0;
 let bgStarted=false;
 
-// fungsi parsing italic/bold sederhana
+// parsing *italic* dan **bold**
 function parseText(text){
   return text
-    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g,'<em>$1</em>');
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>');
 }
 
 // buka amplop
@@ -151,10 +146,10 @@ function openEnvelope() {
   if(!bgStarted){ bgStarted=true; bgMusic.play().catch(()=>{}); }
   isOpened=true;
 
-  // parsing format bold/italic
+  // ubah text ke HTML
   letterBody.innerHTML = parseText(letterBody.textContent);
 
-  // hitung tinggi maksimal surat berdasarkan konten
+  // hitung tinggi maksimal surat
   maxLetterHeight = letterBody.scrollHeight + 40; // + padding
   letterHeight = 0;
   letter.style.height = `${letterHeight}px`;
