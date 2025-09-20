@@ -15,7 +15,7 @@ body {
   justify-content:center;
   align-items:center;
   overflow:hidden;
-  padding:20px;
+  padding:10px;
 }
 
 /* floating hearts */
@@ -23,18 +23,19 @@ body {
 @keyframes floatUp { 0% { transform:translateY(0) scale(1); opacity:1; } 100% { transform:translateY(-800px) scale(1.5); opacity:0; } }
 
 /* Amplop */
-.envelope-container { position:relative; cursor:pointer; width:450px; transform-style:preserve-3d; z-index:10; }
-.envelope { width:100%; height:350px; background:linear-gradient(145deg,#ffffff 0%,#f8f9fa 100%); border:2px solid #e9ecef; position:relative; box-shadow:0 8px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8); border-radius:12px; overflow:hidden; }
+.envelope-container { position:relative; cursor:pointer; width:90%; max-width:450px; transform-style:preserve-3d; z-index:10; }
+.envelope { width:100%; height:300px; background:linear-gradient(145deg,#ffffff 0%,#f8f9fa 100%); border:2px solid #e9ecef; position:relative; box-shadow:0 8px 32px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8); border-radius:12px; overflow:hidden; }
 .envelope-back { position:absolute; top:0; left:0; width:100%; height:100%; background:linear-gradient(145deg,#ffffff 0%,#f1f3f4 100%); border-radius:12px; }
-.envelope-flap { position:absolute; top:-2px; left:-2px; width:454px; height:180px; background:linear-gradient(145deg,#ffffff 0%,#f8f9fa 100%); border:2px solid #e9ecef; border-bottom:none; clip-path:polygon(0 0,100% 0,50% 85%); transform-origin:50% 0%; transition: transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94); z-index:10; box-shadow:0 4px 16px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8); }
+.envelope-flap { position:absolute; top:-2px; left:-2px; width:104%; height:150px; background:linear-gradient(145deg,#ffffff 0%,#f8f9fa 100%); border:2px solid #e9ecef; border-bottom:none; clip-path:polygon(0 0,100% 0,50% 85%); transform-origin:50% 0%; transition: transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94); z-index:10; box-shadow:0 4px 16px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.8); }
 .envelope.opened .envelope-flap { transform: rotateX(-160deg); }
 .envelope-inner { position:absolute; top:8px; left:8px; right:8px; bottom:8px; background:linear-gradient(145deg,#f8f9fa 0%,#e9ecef 100%); border-radius:6px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.1); }
-.envelope.opened .stamp { display: none; }
+.envelope.opened .stamp { display:none; }
 
 /* Surat */
 .letter {
   position:absolute;
-  width:92%;
+  width:95%;
+  max-width:400px;
   height:0px;
   background:linear-gradient(145deg,#ffffff 0%,#fefefe 100%);
   border:1px solid #dee2e6;
@@ -45,7 +46,7 @@ body {
   opacity:0;
   box-shadow:0 8px 32px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8);
   z-index:5;
-  padding:20px;
+  padding:15px;
   overflow:hidden;
   transition: height 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
 }
@@ -53,43 +54,30 @@ body {
 .letter-content { opacity:0; transition: opacity 0.6s ease 0.3s; }
 .letter.content-visible .letter-content { opacity:1; }
 
-.letter-header { text-align: center; margin-bottom: 0px; border-bottom: 1px solid #6c757d; }
-.letter-title { font-size: 22px; font-weight: bold; color: #495057; margin-bottom: 5px; }
-.letter-date { font-size: 12px; color: #6c757d; font-style: italic; margin-bottom: 0; }
+.letter-header { text-align:center; margin-bottom:0px; border-bottom:1px solid #6c757d; }
+.letter-title { font-size:20px; font-weight:bold; color:#495057; margin-bottom:5px; }
+.letter-date { font-size:12px; color:#6c757d; font-style:italic; margin-bottom:0; }
 .letter-body { text-align:justify; white-space:pre-line; font-size:14px; line-height:1.5; }
-.letter-signature { text-align:right; margin-top:9px; font-style:italic; color:#495057; }
+.letter-signature { text-align:right; margin-top:8px; font-style:italic; color:#495057; }
 
 .stamp {
-  position: absolute;
-  bottom: 15px;
-  right: 15px;
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(145deg,#dc3545 0%,#c82333 100%);
-  border: 3px solid #fff;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 14px;
-  font-weight: bold;
-  box-shadow: 0 4px 12px rgba(220,53,69,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
-  z-index: 8;
+  position:absolute; bottom:10px; right:10px; width:50px; height:50px; background:linear-gradient(145deg,#dc3545 0%,#c82333 100%);
+  border:3px solid #fff; border-radius:6px; display:flex; align-items:center; justify-content:center;
+  color:white; font-size:12px; font-weight:bold; box-shadow:0 4px 12px rgba(220,53,69,0.3), inset 0 1px 0 rgba(255,255,255,0.2); z-index:8;
 }
 
-.scroll-indicator { position:absolute; top:20px; left:50%; transform:translateX(-50%); color:#495057; font-size:13px; opacity:0; transition:opacity 0.3s ease; background:rgba(255,255,255,0.95); padding:8px 16px; border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:10; }
+.scroll-indicator { position:absolute; top:15px; left:50%; transform:translateX(-50%); color:#495057; font-size:12px; opacity:0; transition:opacity 0.3s ease; background:rgba(255,255,255,0.95); padding:6px 12px; border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:10; }
 .scroll-indicator.visible { opacity:1; }
 
-.instructions { position:absolute; bottom:20px; left:50%; transform:translateX(-50%); color:#495057; font-size:14px; opacity:0; background:rgba(255,255,255,0.9); padding:10px 20px; border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:10; }
+.instructions { position:absolute; bottom:15px; left:50%; transform:translateX(-50%); color:#495057; font-size:13px; opacity:0; background:rgba(255,255,255,0.9); padding:8px 16px; border-radius:20px; box-shadow:0 4px 12px rgba(0,0,0,0.1); z-index:10; }
 .instructions.visible { opacity:1; }
 
-/* Hanya ubah font di mobile, tanpa ubah amplop atau surat */
-@media (max-width: 768px) {
-  .letter-title { font-size: 18px; }
-  .letter-date { font-size: 11px; }
-  .letter-body { font-size: 13px; line-height: 1.4; }
-  .letter-signature { font-size: 12px; }
+/* Mobile adjustments: hanya font surat */
+@media(max-width:600px) {
+  .letter-body { font-size:13px; line-height:1.4; }
+  .letter-title { font-size:18px; }
+  .letter-date { font-size:11px; }
+  .letter-signature { font-size:12px; }
 }
 </style>
 </head>
@@ -115,8 +103,8 @@ body {
 Tak terbayang jika dulu aku tak menghubungimu.
 Di bulan ke-9 dan 9 bulan kita sudah menjalin hubungan, aku bersyukur Allah memilihmu menjadi teman hidupku. Selama menunggu 12 bulan menuju pernikahan, kita melewati setiap kebahagiaan dan ujian kecil yang datang, dan aku yakin kita mampu menghadapi semuanya bersama.
 
-<i>Aku ingin kamu menjadi langit yang selalu menerima aku sebagai senja, menerima apa adanya.
-Yang kadang hitam kelam, kadang merah merekah.</i>
+<i>Aku ingin kamu menjadi langit yang selalu menerima aku sebagai senja,
+menerima apa adanya. Yang kadang hitam kelam, kadang merah merekah.</i>
 
 <b>"Mau diulang 1000x pun, aku tetap mantap milih kamu"</b>
 
@@ -194,40 +182,34 @@ envelopeContainer.addEventListener('click', () => {
   else openEnvelope();
 });
 
-// scroll untuk mengangkat/menurunkan surat
+// scroll untuk desktop
 document.addEventListener('wheel', function(e) {
   if(!isOpened) return;
   e.preventDefault();
-
   showScrollIndicator();
   showInstructions();
-
   const delta = e.deltaY;
   letterHeight -= delta * 0.5;
   letterHeight = Math.max(0, Math.min(maxLetterHeight, letterHeight));
   letter.style.height = `${letterHeight}px`;
-
   if(letterHeight <= 0) closeEnvelope();
 }, { passive:false });
 
-// touch untuk swipe di HP
-let startY = null;
-letter.addEventListener('touchstart', function(e) {
+// touch scroll untuk mobile
+let touchStartY = 0;
+document.addEventListener('touchstart', e => { if(!isOpened) return; touchStartY = e.touches[0].clientY; });
+document.addEventListener('touchmove', e => {
   if(!isOpened) return;
-  startY = e.touches[0].clientY;
-}, { passive:true });
-letter.addEventListener('touchmove', function(e) {
-  if(!isOpened || startY===null) return;
-  let delta = startY - e.touches[0].clientY;
-  letterHeight += delta * 0.5;
+  const touchY = e.touches[0].clientY;
+  const delta = touchStartY - touchY;
+  letterHeight += delta;
   letterHeight = Math.max(0, Math.min(maxLetterHeight, letterHeight));
   letter.style.height = `${letterHeight}px`;
-  startY = e.touches[0].clientY;
-
+  touchStartY = touchY;
   showScrollIndicator();
   showInstructions();
-}, { passive:false });
-letter.addEventListener('touchend', function(e) { startY = null; });
+  if(letterHeight <= 0) closeEnvelope();
+});
 
 // floating hearts
 function createHeart() {
