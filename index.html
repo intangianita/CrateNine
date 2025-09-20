@@ -33,6 +33,7 @@ body {
 .letter {
   position:absolute;
   width:92%;
+  height:0px;
   background:linear-gradient(145deg,#ffffff 0%,#fefefe 100%);
   border:1px solid #dee2e6;
   border-radius:8px;
@@ -43,18 +44,24 @@ body {
   box-shadow:0 8px 32px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8);
   z-index:5;
   padding:20px;
-  height:0; /* mulai dari tinggi 0 */
-  transition: height 0.2s ease, transform 0.3s ease, opacity 0.3s ease;
+  overflow:hidden;
+  transition: height 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
 }
+
 .letter.pop-up { opacity:1; }
 
-.letter-content { opacity:0; transition: opacity 0.6s ease 0.3s; }
+.letter-content {
+  opacity:0;
+  transition: opacity 0.6s ease 0.3s;
+}
 .letter.content-visible .letter-content { opacity:1; }
 
 .letter-header { text-align:center; margin-bottom:20px; border-bottom:2px solid #6c757d; }
 .letter-title { font-size:22px; font-weight:bold; color:#495057; margin-bottom:6px; }
 .letter-date { font-size:12px; color:#6c757d; font-style:italic; }
-.letter-body { text-align:justify; margin-bottom:15px; white-space:pre-wrap; }
+.letter-body { text-align:justify; white-space:pre-line; } /* tampilkan newline */
+.letter-body em { font-style:italic; }
+.letter-body strong { font-weight:bold; }
 .letter-signature { text-align:right; margin-top:25px; font-style:italic; color:#495057; }
 
 .stamp { position:absolute; top:15px; right:15px; width:60px; height:60px; background:linear-gradient(145deg,#dc3545 0%,#c82333 100%); border:3px solid #fff; border-radius:6px; display:flex; align-items:center; justify-content:center; color:white; font-size:14px; font-weight:bold; box-shadow:0 4px 12px rgba(220,53,69,0.3), inset 0 1px 0 rgba(255,255,255,0.2); z-index:8; }
@@ -124,17 +131,15 @@ const bgMusic = document.getElementById('bgMusic');
 const popSound = document.getElementById('popSound');
 
 let isOpened=false;
-let letterOffset=0;
-let bgStarted=false;
 let letterHeight=0;
 let maxLetterHeight=0;
+let bgStarted=false;
 
-// fungsi markdown sederhana
-function renderMarkdown(text){
-  text = text.replace(/\*\*"([^"]+)"\*\*/g,'<strong>"$1"</strong>');
-  text = text.replace(/\*([^*]+)\*/g,'<em>$1</em>');
-  text = text.replace(/\n/g,'<br>');
-  return text;
+// fungsi parsing italic/bold sederhana
+function parseText(text){
+  return text
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>');
 }
 
 // buka amplop
@@ -146,8 +151,11 @@ function openEnvelope() {
   if(!bgStarted){ bgStarted=true; bgMusic.play().catch(()=>{}); }
   isOpened=true;
 
-  letterBody.innerHTML = renderMarkdown(letterBody.innerText);
-  maxLetterHeight = letterBody.scrollHeight + 40; // padding
+  // parsing format bold/italic
+  letterBody.innerHTML = parseText(letterBody.textContent);
+
+  // hitung tinggi maksimal surat berdasarkan konten
+  maxLetterHeight = letterBody.scrollHeight + 40; // + padding
   letterHeight = 0;
   letter.style.height = `${letterHeight}px`;
 }
@@ -156,10 +164,8 @@ function openEnvelope() {
 function closeEnvelope() {
   letter.classList.remove('content-visible');
   letter.classList.remove('pop-up');
-  letterOffset=0;
   letterHeight=0;
-  letter.style.height = '0px';
-  letter.style.transform=`translate(-50%, -50%)`;
+  letter.style.height=`0px`;
   scrollIndicator.classList.remove('visible');
   setTimeout(()=>{ envelope.classList.remove('opened'); try{ popSound.currentTime=0; popSound.play(); }catch(e){} },300);
   isOpened=false;
@@ -177,13 +183,9 @@ document.addEventListener('wheel', function(e){
   scrollTimeout=setTimeout(()=>scrollIndicator.classList.remove('visible'),1800);
 
   const delta = e.deltaY;
-  letterHeight -= delta*0.5;
-  letterHeight = Math.min(maxLetterHeight, Math.max(0, letterHeight));
+  letterHeight -= delta * 0.5;
+  letterHeight = Math.max(0, Math.min(maxLetterHeight, letterHeight));
   letter.style.height = `${letterHeight}px`;
-
-  letterOffset -= delta*0.3;
-  letterOffset = Math.min(0, Math.max(-150, letterOffset));
-  letter.style.transform = `translate(-50%, calc(-50% + ${letterOffset}px))`;
 
   if(letterHeight <= 0) {
     closeEnvelope();
