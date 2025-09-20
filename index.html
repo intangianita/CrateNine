@@ -32,8 +32,8 @@ body {
 /* Surat */
 .letter {
   position:absolute;
-  width:94%;
-  height:0px;
+  width:92%;
+  height:0px; /* mulai dari 0 */
   background:linear-gradient(145deg,#ffffff 0%,#fefefe 100%);
   border:1px solid #dee2e6;
   border-radius:8px;
@@ -50,7 +50,10 @@ body {
 
 .letter.pop-up { opacity:1; }
 
-.letter-content { opacity:0; transition: opacity 0.6s ease 0.3s; }
+.letter-content {
+  opacity:0;
+  transition: opacity 0.6s ease 0.3s;
+}
 .letter.content-visible .letter-content { opacity:1; }
 
 .letter-header { text-align:center; margin-bottom:20px; border-bottom:2px solid #6c757d; }
@@ -96,9 +99,9 @@ Terkadang aku senang, tertawa jika bisa bertemu dan berbincang hal seru denganmu
 Terkadang aku terlelap dalam kesedihan, karena pertengkaran kecil yang sebetulnya mungkin tidak perlu terlalu dipikirkan dan diperdebatkan.
 Namun namanya hidup memang isinya adalah ujian, dan aku yakin bersamamu nanti kita bisa lalui bersama.
 
-<em>Aku ingin kamu menjadi langit yang selalu menerima aku sebagai senja, menerima apa adanya. Yang kadang hitam kelam, kadang merah merekah.</em>
+<i>Aku ingin kamu menjadi langit yang selalu menerima aku sebagai senja, menerima apa adanya. Yang kadang hitam kelam, kadang merah merekah.</i>
 
-<strong>"Mau diulang 1000x pun, aku tetap mantep milih kamu"</strong>
+<b>"Mau diulang 1000x pun, aku tetap mantep milih kamu"</b>
 
 Aku pernah berpikir, apakah akan berbeda jika aku bisa memulai hubungan ini lebih awal, bagaimana rasanya.
 Tapi aku yakin dimana waktu kita dipisahkan, kita sama-sama berjuang dan memperbaiki diri demi masa depan yang kita impikan.
@@ -107,8 +110,9 @@ Aku ingin bisa menjadi teman hidup sesurgamu, mencari ridho Allah dalam setiap l
 Semoga suka dengan hadiah kecil yang aku beri.
 Ingatlah setiap pemberian yang aku beri itu tanda sayang dan tidak berharap imbalan (jadi tidak perlu membalas, cukup terima dengan segenap hati).
 Semoga juga hubungan kita dengan Allah selalu dan makin dekat, sehingga hubungan kitapun tetap bisa erat dan bertahan sampai maut memisahkan. Aamiin.
+
+<div class="letter-signature">Tertanda,<br><b>Soremu</b> ✨</div>
       </div>
-      <div class="letter-signature">Tertanda,<br><strong>Soremu</strong> ✨</div>
     </div>
   </div>
 </div>
@@ -139,7 +143,7 @@ function openEnvelope() {
   if(!bgStarted){ bgStarted=true; bgMusic.play().catch(()=>{}); }
   isOpened=true;
 
-  // hitung tinggi maksimal surat termasuk signature
+  // tinggi maksimal surat berdasarkan seluruh konten termasuk signature
   maxLetterHeight = letter.scrollHeight;
   letterHeight = 0;
   letter.style.height = `${letterHeight}px`;
@@ -163,18 +167,17 @@ let scrollTimeout;
 document.addEventListener('wheel', function(e){
   if(!isOpened) return;
   e.preventDefault();
-  clearTimeout(scrollTimeout);
+
   scrollIndicator.classList.add('visible');
-  scrollTimeout=setTimeout(()=>scrollIndicator.classList.remove('visible'),1800);
+  clearTimeout(scrollTimeout);
+  scrollTimeout = setTimeout(()=>scrollIndicator.classList.remove('visible'),1800);
 
   const delta = e.deltaY;
   letterHeight -= delta * 0.5;
   letterHeight = Math.max(0, Math.min(maxLetterHeight, letterHeight));
   letter.style.height = `${letterHeight}px`;
 
-  if(letterHeight <= 0) {
-    closeEnvelope();
-  }
+  if(letterHeight <= 0) closeEnvelope();
 },{passive:false});
 
 // floating hearts
